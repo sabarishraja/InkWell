@@ -1,0 +1,234 @@
+/* ============================================================
+   INKWELL — VAULT PAGE CSS (vault.html)
+   Letter cards, tab filters, progress timeline.
+============================================================ */
+
+/* ---- Page Layout ------------------------------------------ */
+.vault-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
+.vault-content {
+  flex: 1;
+  padding: var(--space-2xl) var(--space-lg);
+  max-width: 640px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* ---- Vault Header ----------------------------------------- */
+.vault-header {
+  text-align: center;
+  margin-bottom: var(--space-xl);
+}
+
+.vault-title {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 40px;
+  color: var(--ink-parchment);
+  letter-spacing: -0.01em;
+}
+
+.vault-subtitle {
+  margin-top: var(--space-sm);
+  font-family: var(--font-body);
+  font-style: italic;
+  font-size: 16px;
+  color: rgba(245, 230, 200, 0.4);
+}
+
+/* ---- Tab Filters ------------------------------------------ */
+.vault-tabs {
+  display: flex;
+  gap: var(--space-lg);
+  justify-content: center;
+  margin-bottom: var(--space-xl);
+  border-bottom: 1px solid rgba(201, 151, 74, 0.1);
+  padding-bottom: 0;
+}
+
+.vault-tab {
+  font-family: var(--font-mechanical);
+  font-size: 11px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: rgba(245, 230, 200, 0.35);
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 8px 0;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  transition: color var(--duration-fast) ease,
+              border-color var(--duration-fast) ease;
+}
+
+.vault-tab:hover {
+  color: rgba(245, 230, 200, 0.65);
+}
+
+.vault-tab.tab--active {
+  color: var(--ink-gold);
+  border-bottom-color: var(--ink-gold);
+}
+
+/* ---- Cards List ------------------------------------------- */
+.vault-cards {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+/* ---- Letter Card ------------------------------------------ */
+.letter-card {
+  background: #1A1208;
+  border: 1px solid rgba(201, 151, 74, 0.15);
+  border-left: 3px solid var(--ink-amber);
+  border-radius: 4px;
+  padding: var(--space-lg);
+  cursor: pointer;
+  text-decoration: none;
+  color: inherit;
+  display: block;
+  transition: transform var(--duration-fast) ease,
+              box-shadow var(--duration-fast) ease,
+              border-color var(--duration-fast) ease;
+}
+
+.letter-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(201, 151, 74, 0.12);
+}
+
+/* Card top row */
+.card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-md);
+}
+
+.card-recipient {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 20px;
+  color: var(--ink-parchment);
+}
+
+/* Status badge */
+.status-badge {
+  font-family: var(--font-mechanical);
+  font-size: 10px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  padding: 3px 10px;
+  border-radius: 20px;
+  flex-shrink: 0;
+}
+
+.badge--sealed {
+  color: var(--ink-gold);
+  background: rgba(201, 151, 74, 0.1);
+  border: 1px solid rgba(201, 151, 74, 0.25);
+}
+
+.badge--delivered {
+  color: #6BAB7A;
+  background: rgba(107, 171, 122, 0.1);
+  border: 1px solid rgba(107, 171, 122, 0.25);
+}
+
+.badge--opened {
+  color: rgba(245, 230, 200, 0.35);
+  background: rgba(245, 230, 200, 0.04);
+  border: 1px solid rgba(245, 230, 200, 0.1);
+}
+
+/* Card meta row */
+.card-meta {
+  display: flex;
+  gap: var(--space-xl);
+  margin-bottom: var(--space-md);
+}
+
+.card-meta-item {
+  font-family: var(--font-mechanical);
+  font-size: 11px;
+  letter-spacing: 0.5px;
+  color: rgba(245, 230, 200, 0.35);
+}
+
+.card-meta-item strong {
+  font-weight: 400;
+  color: rgba(245, 230, 200, 0.55);
+}
+
+/* Progress timeline */
+.card-progress {
+  position: relative;
+  height: 4px;
+  background: rgba(201, 151, 74, 0.12);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.card-progress__fill {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: var(--progress, 0%);
+  background: linear-gradient(90deg, var(--ink-amber), var(--ink-gold));
+  border-radius: 2px;
+  transition: width 600ms var(--ease-out);
+}
+
+.card-progress__dot {
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  left: var(--progress, 0%);
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--ink-gold);
+  box-shadow: 0 0 6px rgba(201, 151, 74, 0.6);
+}
+
+/* ---- Empty State ------------------------------------------ */
+.vault-empty {
+  text-align: center;
+  padding: var(--space-2xl) 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+.vault-empty p {
+  font-family: var(--font-body);
+  font-style: italic;
+  font-size: 16px;
+  color: rgba(245, 230, 200, 0.35);
+}
+
+.vault-empty a {
+  font-family: var(--font-mechanical);
+  font-size: 11px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--ink-gold);
+  opacity: 0.7;
+  text-decoration: none;
+  border-bottom: 1px solid currentColor;
+  padding-bottom: 2px;
+  transition: opacity var(--duration-fast) ease;
+}
+
+.vault-empty a:hover {
+  opacity: 1;
+}

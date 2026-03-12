@@ -1,0 +1,161 @@
+/* ============================================================
+   INKWELL — RECIPIENT PAGE CSS (recipient.html)
+   No nav. Full-bleed reading experience.
+============================================================ */
+
+/* ---- Base ------------------------------------------------- */
+.recipient-page {
+  background: #0D0B09;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow-x: hidden;
+}
+
+/* ---- Intro Message ---------------------------------------- */
+.recipient-intro {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  background: #0D0B09;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 500ms ease;
+}
+
+.recipient-intro.intro--visible {
+  opacity: 1;
+}
+
+.intro-text {
+  font-family: var(--font-display);
+  font-weight: 300;
+  font-size: 28px;
+  color: var(--ink-parchment);
+  letter-spacing: 0.02em;
+}
+
+/* ---- Letter Wrapper --------------------------------------- */
+.letter-wrapper {
+  position: relative;
+  max-width: 640px;
+  width: 90%;
+  margin: var(--space-2xl) auto;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 700ms var(--ease-out),
+              transform 700ms var(--ease-out);
+}
+
+.letter-wrapper.letter--visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Use the shared .paper class from global, with lift shadow */
+.letter-wrapper .paper {
+  width: 100%;
+  min-height: 600px;
+  box-shadow: var(--shadow-lift);
+  padding: var(--space-2xl);
+}
+
+/* ---- Paper Date (recipient view) -------------------------- */
+.recipient-date {
+  font-family: var(--font-cursive);
+  font-size: 16px;
+  color: rgba(44, 24, 16, 0.5);
+  text-align: right;
+  line-height: 42px;
+  margin-bottom: 8px;
+  opacity: 0;
+  transition: opacity var(--duration-mid) ease;
+}
+
+.recipient-date.el--visible {
+  opacity: 1;
+}
+
+/* ---- Letter Text Area ------------------------------------- */
+.recipient-text {
+  font-family: var(--font-cursive);
+  font-size: var(--paper-font-size);
+  line-height: var(--paper-line-height);
+  color: var(--ink-sepia);
+  white-space: pre-wrap;
+  word-break: break-word;
+  min-height: 200px;
+}
+
+/* Ink color variants applied by JS from letter data */
+.recipient-text.ink-navy     { color: var(--ink-navy); }
+.recipient-text.ink-midnight { color: var(--ink-midnight); }
+
+/* ---- Replay Cursor ---------------------------------------- */
+.replay-cursor {
+  display: inline-block;
+  width: 2px;
+  height: 26px;
+  background: var(--ink-sepia);
+  animation: cursorBlink 1s step-end infinite;
+  vertical-align: text-bottom;
+  transform: translateY(3px);
+}
+
+.replay-cursor.ink-navy     { background: var(--ink-navy); }
+.replay-cursor.ink-midnight { background: var(--ink-midnight); }
+
+.replay-cursor.cursor--done {
+  animation: none;
+  opacity: 0;
+  transition: opacity 1s ease;
+}
+
+@keyframes cursorBlink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
+}
+
+/* ---- Branding Footer -------------------------------------- */
+.recipient-footer {
+  margin-top: var(--space-xl);
+  text-align: center;
+  opacity: 0;
+  transition: opacity var(--duration-slow) ease;
+}
+
+.recipient-footer.footer--visible {
+  opacity: 1;
+}
+
+.recipient-footer p {
+  font-family: var(--font-mechanical);
+  font-size: 12px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: rgba(245, 230, 200, 0.2);
+}
+
+/* ---- Error State ------------------------------------------ */
+.recipient-error {
+  text-align: center;
+  padding: var(--space-xl);
+  display: none;
+}
+
+.recipient-error.error--visible {
+  display: block;
+}
+
+.recipient-error p {
+  font-family: var(--font-body);
+  font-style: italic;
+  font-size: 16px;
+  color: rgba(245, 230, 200, 0.35);
+  line-height: 1.7;
+}

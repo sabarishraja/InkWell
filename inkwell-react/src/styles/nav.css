@@ -1,0 +1,149 @@
+/* ============================================================
+   INKWELL — NAV CSS
+   Fixed navigation bar shared across index, write, vault pages.
+============================================================ */
+
+/* ---- Nav Container ---------------------------------------- */
+.site-nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 32px;
+  background: rgba(13, 11, 9, 0.92);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(201, 151, 74, 0.15);
+}
+
+/* ---- Logo ------------------------------------------------- */
+.nav-logo {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 22px;
+  letter-spacing: 4px;
+  color: var(--ink-gold);
+  text-transform: uppercase;
+  transition: color var(--duration-fast) ease;
+  text-decoration: none;
+}
+
+.nav-logo:hover {
+  color: var(--ink-parchment);
+}
+
+/* ---- Links List ------------------------------------------- */
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+}
+
+.nav-links a {
+  font-family: var(--font-ui);
+  font-weight: 400;
+  font-size: 12px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: rgba(245, 230, 200, 0.55);
+  text-decoration: none;
+  padding-bottom: 2px;
+  border-bottom: 1px solid transparent;
+  transition: color 200ms ease, border-color 200ms ease;
+}
+
+.nav-links a:hover {
+  color: var(--ink-parchment);
+}
+
+/* Active page link */
+.nav-links a[aria-current="page"] {
+  color: var(--ink-gold);
+  border-bottom-color: var(--ink-amber);
+}
+
+/* ---- Hamburger (mobile) ----------------------------------- */
+.nav-hamburger {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  padding: 4px;
+  cursor: pointer;
+  background: none;
+  border: none;
+}
+
+.nav-hamburger span {
+  display: block;
+  width: 22px;
+  height: 1.5px;
+  background: rgba(245, 230, 200, 0.6);
+  transition: transform var(--duration-fast) ease,
+              opacity var(--duration-fast) ease;
+}
+
+/* Hamburger → X when open */
+.site-nav.nav--open .nav-hamburger span:nth-child(1) {
+  transform: translateY(6.5px) rotate(45deg);
+}
+.site-nav.nav--open .nav-hamburger span:nth-child(2) {
+  opacity: 0;
+}
+.site-nav.nav--open .nav-hamburger span:nth-child(3) {
+  transform: translateY(-6.5px) rotate(-45deg);
+}
+
+/* ---- Mobile Breakpoint ------------------------------------ */
+@media (max-width: 768px) {
+  .nav-hamburger {
+    display: flex;
+  }
+
+  .nav-links {
+    position: fixed;
+    top: 56px;
+    left: 0;
+    right: 0;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0;
+    background: rgba(13, 11, 9, 0.97);
+    border-bottom: 1px solid rgba(201, 151, 74, 0.15);
+    overflow: hidden;
+    max-height: 0;
+    transition: max-height var(--duration-mid) var(--ease-out);
+  }
+
+  .site-nav.nav--open .nav-links {
+    max-height: 240px;
+  }
+
+  .nav-links li {
+    width: 100%;
+  }
+
+  .nav-links a {
+    display: block;
+    padding: 18px 32px;
+    font-size: 13px;
+    border-bottom: 1px solid rgba(201, 151, 74, 0.08);
+    border-left: none;
+  }
+
+  .nav-links a[aria-current="page"] {
+    border-bottom-color: rgba(201, 151, 74, 0.08);
+    border-left: 3px solid var(--ink-amber);
+    padding-left: 29px;
+  }
+}
+
+/* ---- Nav spacer (push page content below fixed nav) ------- */
+.nav-spacer {
+  height: 56px;
+  flex-shrink: 0;
+}

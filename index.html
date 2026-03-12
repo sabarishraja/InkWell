@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Write a Letter</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Pinyon+Script&family=Special+Elite&display=swap" rel="stylesheet">
+
+  <style>
+    /* ============================================================
+       RESET & BASE
+    ============================================================ */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    /* ============================================================
+       DESK BACKGROUND — dark walnut wood grain via CSS gradients
+    ============================================================ */
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      background-color: #1a0e06;
+      background-image:
+        /* fine grain streaks */
+        repeating-linear-gradient(
+          92deg,
+          transparent,
+          transparent 2px,
+          rgba(255,255,255,0.012) 2px,
+          rgba(255,255,255,0.012) 3px
+        ),
+        repeating-linear-gradient(
+          88deg,
+          transparent,
+          transparent 4px,
+          rgba(0,0,0,0.08) 4px,
+          rgba(0,0,0,0.08) 5px
+        ),
+        /* medium wood grain bands */
+        repeating-linear-gradient(
+          91deg,
+          transparent,
+          transparent 18px,
+          rgba(80,35,10,0.18) 18px,
+          rgba(80,35,10,0.18) 36px
+        ),
+        repeating-linear-gradient(
+          89deg,
+          transparent,
+          transparent 30px,
+          rgba(40,18,5,0.22) 30px,
+          rgba(40,18,5,0.22) 60px
+        ),
+        /* broad colour base */
+        linear-gradient(
+          93deg,
+          #1a0e06 0%,
+          #2a1508 18%,
+          #1f1008 35%,
+          #301808 52%,
+          #1a0e06 68%,
+          #2a1508 84%,
+          #1a0e06 100%
+        );
+      font-family: 'Special Elite', serif;
+      user-select: none;
+    }
+
+    /* ============================================================
+       TYPEWRITER FRAME
+    ============================================================ */
+    #typewriter-frame {
+      position: relative;
+      width: 720px;
+      background: linear-gradient(160deg, #2e2e2e 0%, #1c1c1c 40%, #252525 70%, #1a1a1a 100%);
+      border-radius: 8px 8px 0 0;
+      padding: 28px 20px 0 20px;
+      box-shadow:
+        0 -2px 0 #444 inset,
+        0 2px 8px rgba(0,0,0,0.8),
+        0 8px 32px rgba(0,0,0,0.9),
+        0 0 0 2px #111;
+      /* frame lip at bottom — paper slides into here */
+      border-bottom: 18px solid #1a1a1a;
+    }
+
+    /* decorative rivets */
+    #typewriter-frame::before,
+    #typewriter-frame::after {
+      content: '';
+      position: absolute;
+      top: 10px;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 35%, #555, #222);
+      box-shadow: 0 1px 2px rgba(0,0,0,0.8);
+    }
+    #typewriter-frame::before { left: 14px; }
+    #typewriter-frame::after  { right: 14px; }
+
+    /* ============================================================
+       PAPER WRAPPER — handles slide-in animation
+    ============================================================ */
+    #paper-wrapper {
+      opacity: 0;
+      transform: translateY(100px);
+      transition: transform 600ms ease-out, opacity 600ms ease-out;
+    }
+
+    #paper-wrapper.loaded {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ============================================================
+       PAPER
+    ============================================================ */
+    #paper {
+      position: relative;
+      width: 680px;
+      height: 860px;
+      background-color: #F5E6C8;
+      background-image:
+        /* subtle noise/fibre texture via layered gradients */
+        repeating-linear-gradient(
+          0deg,
+          transparent,
+          transparent 1px,
+          rgba(180,140,80,0.04) 1px,
+          rgba(180,140,80,0.04) 2px
+        ),
+        repeating-linear-gradient(
+          90deg,
+          transparent,
+          transparent 3px,
+          rgba(200,160,90,0.03) 3px,
+          rgba(200,160,90,0.03) 4px
+        );
+      box-shadow:
+        0 0 0 1px rgba(180,140,80,0.3),
+        2px 4px 12px rgba(0,0,0,0.35),
+        4px 8px 28px rgba(0,0,0,0.25),
+        inset 0 0 40px rgba(200,160,80,0.08);
+      overflow: hidden;
+    }
+
+    /* ============================================================
+       WRITING LINES — every 42px
+    ============================================================ */
+    #paper-lines {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      pointer-events: none;
+      background-image: repeating-linear-gradient(
+        to bottom,
+        transparent,
+        transparent 41px,
+        #E8D5B7 41px,
+        #E8D5B7 42px
+      );
+      background-position: 0 60px; /* offset so first line aligns with first text line */
+    }
+
+    /* ============================================================
+       DATE — top right, cursive, not editable
+    ============================================================ */
+    #date-display {
+      position: absolute;
+      top: 60px;
+      right: 60px;
+      font-family: 'Pinyon Script', cursive;
+      font-size: 22px;
+      color: #2C1810;
+      opacity: 0;
+      transition: opacity 300ms ease-in;
+      pointer-events: none;
+      line-height: 42px;
+    }
+
+    #date-display.visible {
+      opacity: 1;
+    }
+
+    /* ============================================================
+       RIGHT MARGIN FLASH
+    ============================================================ */
+    #margin-flash {
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 4px;
+      height: 100%;
+      background: transparent;
+      pointer-events: none;
+      transition: background 100ms;
+    }
+
+    #margin-flash.ding {
+      background: rgba(255, 170, 0, 0.7);
+    }
+
+    /* ============================================================
+       CARRIAGE RETURN SWEEP ANIMATION
+    ============================================================ */
+    #carriage-sweep {
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 3px;
+      background: linear-gradient(90deg, transparent, rgba(180,140,70,0.5), transparent);
+      pointer-events: none;
+      opacity: 0;
+    }
+
+    #carriage-sweep.sweep {
+      animation: carriageSweep 300ms ease-out forwards;
+    }
+
+    @keyframes carriageSweep {
+      0%   { left: -100%; opacity: 1; }
+      100% { left: 100%;  opacity: 0; }
+    }
+
+    /* ============================================================
+       TYPING AREA — contenteditable
+    ============================================================ */
+    #typing-area {
+      position: absolute;
+      top: 60px;
+      left: 60px;
+      /* right margin: 60px, so width = 680 - 60 - 60 = 560px */
+      width: 560px;
+      /* bottom margin 60px: height = 860 - 60 - 60 = 740px */
+      height: 740px;
+      font-family: 'Pinyon Script', cursive;
+      font-size: 22px;
+      line-height: 42px;
+      color: #2C1810;
+      outline: none;
+      border: none;
+      background: transparent;
+      overflow: hidden;
+      word-wrap: break-word;
+      white-space: pre-wrap;
+      cursor: none; /* hide native cursor — we draw our own */
+      caret-color: transparent;
+    }
+
+    /* ============================================================
+       CUSTOM CURSOR
+    ============================================================ */
+    #custom-cursor {
+      position: absolute;
+      width: 2px;
+      height: 26px;
+      background: #5C2D0A;
+      pointer-events: none;
+      animation: cursorBlink 1s step-end infinite;
+      display: none; /* shown after load animation */
+      transform: translateY(8px); /* vertically centre within 42px line */
+    }
+
+    @keyframes cursorBlink {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: 0; }
+    }
+
+    /* ============================================================
+       KEYBOARD HINTS — below frame
+    ============================================================ */
+    #hints {
+      margin-top: 14px;
+      font-family: 'Special Elite', serif;
+      font-size: 13px;
+      color: #5a4030;
+      letter-spacing: 0.05em;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ============================================================
+       TYPEWRITER FRAME
+  ============================================================ -->
+  <div id="typewriter-frame">
+    <div id="paper-wrapper">
+      <div id="paper">
+
+        <!-- Horizontal writing lines -->
+        <div id="paper-lines"></div>
+
+        <!-- Right margin flash overlay -->
+        <div id="margin-flash"></div>
+
+        <!-- Carriage return sweep -->
+        <div id="carriage-sweep"></div>
+
+        <!-- Auto-filled date -->
+        <div id="date-display"></div>
+
+        <!-- Main typing area -->
+        <div id="typing-area" contenteditable="true" spellcheck="false" autocorrect="off" autocomplete="off"></div>
+
+        <!-- Custom cursor element (positioned by JS) -->
+        <div id="custom-cursor"></div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Keyboard hints -->
+  <div id="hints">[ ENTER ] Carriage Return &nbsp;&nbsp;|&nbsp;&nbsp; [ BACKSPACE ] Delete</div>
+
+  <!-- ============================================================
+       JAVASCRIPT
+  ============================================================ -->
+  <script>
+    'use strict';
+
+    /* ============================================================
+       WEB AUDIO CONTEXT
+    ============================================================ */
+    let audioCtx = null;
+
+    function getAudioContext() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      // Resume if suspended (autoplay policy)
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+      return audioCtx;
+    }
+
+    /* ---- Utility: short noise burst buffer ---- */
+    function makeNoiseBuffer(ctx, duration) {
+      const sampleRate = ctx.sampleRate;
+      const length = Math.floor(sampleRate * duration);
+      const buffer = ctx.createBuffer(1, length, sampleRate);
+      const data = buffer.getChannelData(0);
+      for (let i = 0; i < length; i++) {
+        data[i] = (Math.random() * 2 - 1);
+      }
+      return buffer;
+    }
+
+    /* ============================================================
+       SOUND 1 — KEY CLACK
+       Short sharp percussive click ~60ms, square wave ~800Hz ±80Hz
+    ============================================================ */
+    function playKeyClack() {
+      const ctx = getAudioContext();
+      const now = ctx.currentTime;
+      const pitchVariance = (Math.random() - 0.5) * 160; // ±80Hz
+      const freq = 800 + pitchVariance;
+
+      // Oscillator component
+      const osc = ctx.createOscillator();
+      const oscGain = ctx.createGain();
+      osc.type = 'square';
+      osc.frequency.setValueAtTime(freq, now);
+      osc.frequency.exponentialRampToValueAtTime(freq * 0.5, now + 0.06);
+      oscGain.gain.setValueAtTime(0.18, now);
+      oscGain.gain.exponentialRampToValueAtTime(0.001, now + 0.06);
+      osc.connect(oscGain);
+
+      // Noise component
+      const noiseBuffer = makeNoiseBuffer(ctx, 0.06);
+      const noiseSource = ctx.createBufferSource();
+      noiseSource.buffer = noiseBuffer;
+      const noiseFilter = ctx.createBiquadFilter();
+      noiseFilter.type = 'bandpass';
+      noiseFilter.frequency.value = 2000;
+      noiseFilter.Q.value = 1.5;
+      const noiseGain = ctx.createGain();
+      noiseGain.gain.setValueAtTime(0.12, now);
+      noiseGain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
+      noiseSource.connect(noiseFilter);
+      noiseFilter.connect(noiseGain);
+
+      // Master output
+      const master = ctx.createGain();
+      master.gain.value = 0.7;
+      oscGain.connect(master);
+      noiseGain.connect(master);
+      master.connect(ctx.destination);
+
+      osc.start(now);
+      osc.stop(now + 0.07);
+      noiseSource.start(now);
+      noiseSource.stop(now + 0.07);
+    }
+
+    /* ============================================================
+       SOUND 2 — BACKSPACE
+       Softer click ~500Hz, ~90ms
+    ============================================================ */
+    function playBackspace() {
+      const ctx = getAudioContext();
+      const now = ctx.currentTime;
+
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'square';
+      osc.frequency.setValueAtTime(500, now);
+      osc.frequency.exponentialRampToValueAtTime(300, now + 0.09);
+      gain.gain.setValueAtTime(0.10, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.09);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(now);
+      osc.stop(now + 0.1);
+    }
+
+    /* ============================================================
+       SOUND 3 — DING
+       Bright bell ~1200Hz, sine, 600ms decay
+    ============================================================ */
+    function playDing() {
+      const ctx = getAudioContext();
+      const now = ctx.currentTime;
+
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(1200, now);
+
+      gain.gain.setValueAtTime(0.0, now);
+      gain.gain.linearRampToValueAtTime(0.35, now + 0.005); // fast attack
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.6); // slow bell decay
+
+      // Light reverb via a delayed copy
+      const delay = ctx.createDelay(0.08);
+      delay.delayTime.value = 0.07;
+      const delayGain = ctx.createGain();
+      delayGain.gain.value = 0.18;
+      osc.connect(delay);
+      delay.connect(delayGain);
+      delayGain.connect(ctx.destination);
+
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+
+      osc.start(now);
+      osc.stop(now + 0.65);
+    }
+
+    /* ============================================================
+       SOUND 4 — CARRIAGE RETURN
+       White noise panned L→R over 400ms + low thump at end
+    ============================================================ */
+    function playCarriageReturn() {
+      const ctx = getAudioContext();
+      const now = ctx.currentTime;
+      const duration = 0.4;
+
+      // Filtered noise (mechanical whirr)
+      const noiseBuffer = makeNoiseBuffer(ctx, duration);
+      const noiseSource = ctx.createBufferSource();
+      noiseSource.buffer = noiseBuffer;
+
+      const filter = ctx.createBiquadFilter();
+      filter.type = 'bandpass';
+      filter.frequency.value = 800;
+      filter.Q.value = 2;
+
+      const panner = ctx.createStereoPanner();
+      panner.pan.setValueAtTime(-1, now);
+      panner.pan.linearRampToValueAtTime(1, now + duration);
+
+      const whirrGain = ctx.createGain();
+      whirrGain.gain.setValueAtTime(0.25, now);
+      whirrGain.gain.linearRampToValueAtTime(0.0, now + duration);
+
+      noiseSource.connect(filter);
+      filter.connect(panner);
+      panner.connect(whirrGain);
+      whirrGain.connect(ctx.destination);
+      noiseSource.start(now);
+      noiseSource.stop(now + duration + 0.01);
+
+      // Low thump at end
+      const thumpTime = now + duration;
+      const thumpOsc = ctx.createOscillator();
+      const thumpGain = ctx.createGain();
+      thumpOsc.type = 'sine';
+      thumpOsc.frequency.setValueAtTime(150, thumpTime);
+      thumpOsc.frequency.exponentialRampToValueAtTime(60, thumpTime + 0.12);
+      thumpGain.gain.setValueAtTime(0.5, thumpTime);
+      thumpGain.gain.exponentialRampToValueAtTime(0.001, thumpTime + 0.15);
+      thumpOsc.connect(thumpGain);
+      thumpGain.connect(ctx.destination);
+      thumpOsc.start(thumpTime);
+      thumpOsc.stop(thumpTime + 0.16);
+    }
+
+    /* ============================================================
+       DATE FORMATTING
+    ============================================================ */
+    function formatDate() {
+      const now = new Date();
+      const options = { year: 'numeric', month: 'long', day: 'numeric' };
+      return now.toLocaleDateString('en-US', options);
+    }
+
+    /* ============================================================
+       CURSOR POSITIONING
+       Measures where the end of text is in the contenteditable div
+       and moves #custom-cursor there.
+    ============================================================ */
+    const typingArea = document.getElementById('typing-area');
+    const cursor     = document.getElementById('custom-cursor');
+
+    function updateCursorPosition() {
+      // Create a temporary range at the very end of content
+      const selection = window.getSelection();
+      if (!selection || !selection.rangeCount) return;
+
+      const range = selection.getRangeAt(0).cloneRange();
+      range.collapse(false); // collapse to end
+
+      // Get bounding rect of the range end point
+      const rects = range.getClientRects();
+      let x, y;
+
+      if (rects.length > 0) {
+        const rect = rects[rects.length - 1];
+        const areaRect = typingArea.getBoundingClientRect();
+        x = rect.right - areaRect.left;
+        y = rect.top  - areaRect.top;
+      } else {
+        // Empty — put at origin of typing area
+        x = 0;
+        y = 0;
+      }
+
+      // Paper offset: typing-area is at left:60, top:60 inside paper
+      const paper = document.getElementById('paper');
+      const paperRect = paper.getBoundingClientRect();
+      const areaRect  = typingArea.getBoundingClientRect();
+
+      const cursorX = areaRect.left - paperRect.left + x;
+      const cursorY = areaRect.top  - paperRect.top  + y;
+
+      cursor.style.left = cursorX + 'px';
+      cursor.style.top  = cursorY + 'px';
+
+      // Check right margin proximity (content width 560px, so right edge at 60+560=620)
+      const rightEdge = 560; // relative to typing area left
+      if (x >= rightEdge - 40) {
+        triggerMarginDing();
+      }
+    }
+
+    /* ============================================================
+       MARGIN DING + FLASH
+    ============================================================ */
+    let dingCooldown = false;
+
+    function triggerMarginDing() {
+      if (dingCooldown) return;
+      dingCooldown = true;
+      playDing();
+
+      const flash = document.getElementById('margin-flash');
+      flash.classList.add('ding');
+      setTimeout(() => {
+        flash.classList.remove('ding');
+        // reset cooldown after a short delay so it can re-trigger on next approach
+        setTimeout(() => { dingCooldown = false; }, 800);
+      }, 400);
+    }
+
+    /* ============================================================
+       CARRIAGE RETURN SWEEP ANIMATION
+    ============================================================ */
+    function triggerCarriageSweep() {
+      const sweep = document.getElementById('carriage-sweep');
+      sweep.classList.remove('sweep');
+      // Force reflow
+      void sweep.offsetWidth;
+      sweep.classList.add('sweep');
+    }
+
+    /* ============================================================
+       KEYBOARD HANDLING
+    ============================================================ */
+    let typingEnabled = false;
+
+    typingArea.addEventListener('keydown', (e) => {
+      if (!typingEnabled) {
+        e.preventDefault();
+        return;
+      }
+
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        playCarriageReturn();
+        triggerCarriageSweep();
+
+        // Insert a newline manually
+        const selection = window.getSelection();
+        if (selection && selection.rangeCount) {
+          const range = selection.getRangeAt(0);
+          range.deleteContents();
+          const br = document.createElement('br');
+          range.insertNode(br);
+          // Move cursor after the <br>
+          range.setStartAfter(br);
+          range.collapse(true);
+          selection.removeAllRanges();
+          selection.addRange(range);
+        }
+
+        setTimeout(updateCursorPosition, 10);
+        return;
+      }
+
+      if (e.key === 'Backspace') {
+        // Let the browser handle deletion; play sound
+        playBackspace();
+        setTimeout(updateCursorPosition, 10);
+        return;
+      }
+
+      // Suppress non-printable keys silently (arrows, function keys etc.)
+      if (e.key.length > 1 && e.key !== 'Spacebar') {
+        // Allow: Tab gets suppressed too
+        e.preventDefault();
+        return;
+      }
+
+      // Printable character
+      playKeyClack();
+      setTimeout(updateCursorPosition, 10);
+    });
+
+    // Also catch input events for cursor update
+    typingArea.addEventListener('input', () => {
+      setTimeout(updateCursorPosition, 10);
+    });
+
+    // Prevent paste (keeps the experience pure)
+    typingArea.addEventListener('paste', (e) => {
+      e.preventDefault();
+    });
+
+    /* ============================================================
+       PAGE LOAD ANIMATION SEQUENCE
+    ============================================================ */
+    window.addEventListener('load', () => {
+      const paperWrapper  = document.getElementById('paper-wrapper');
+      const dateDisplay   = document.getElementById('date-display');
+
+      // Set date text
+      dateDisplay.textContent = formatDate();
+
+      // Step 1: slide paper up after a short delay
+      setTimeout(() => {
+        paperWrapper.classList.add('loaded');
+
+        // Step 2: after paper settles (600ms), fade in date
+        setTimeout(() => {
+          dateDisplay.classList.add('visible');
+
+          // Step 3: after date fades in (300ms), show cursor and enable typing
+          setTimeout(() => {
+            cursor.style.display = 'block';
+            typingEnabled = true;
+            typingArea.focus();
+            updateCursorPosition();
+          }, 320);
+
+        }, 620);
+
+      }, 200);
+    });
+
+    /* ============================================================
+       KEEP FOCUS ON TYPING AREA
+    ============================================================ */
+    document.addEventListener('click', () => {
+      if (typingEnabled) typingArea.focus();
+    });
+
+    /* Keep cursor in sync if selection changes by mouse */
+    document.addEventListener('selectionchange', () => {
+      if (typingEnabled) {
+        // Force cursor to end
+        const sel = window.getSelection();
+        if (sel && typingArea.contains(sel.focusNode)) {
+          updateCursorPosition();
+        }
+      }
+    });
+  </script>
+</body>
+</html>

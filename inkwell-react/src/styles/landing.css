@@ -1,0 +1,396 @@
+/* ============================================================
+   INKWELL — LANDING PAGE CSS (index.html)
+   Hero, How It Works, Time Capsule feature, Footer.
+============================================================ */
+
+/* ---- Base ------------------------------------------------- */
+.landing-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+}
+
+/* ---- Hero Section ----------------------------------------- */
+.hero {
+  position: relative;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: var(--space-2xl) var(--space-lg);
+  background:
+    radial-gradient(ellipse at 30% 60%, #2C1A0E 0%, rgba(44, 26, 14, 0) 65%),
+    radial-gradient(ellipse at 75% 30%, #1A1208 0%, rgba(26, 18, 8, 0) 55%),
+    var(--ink-void);
+  isolation: isolate;
+  overflow: hidden;
+}
+
+/* Grain texture overlay via inline SVG filter */
+.hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: 0.04;
+  filter: url(#grain);
+  pointer-events: none;
+  z-index: -1;
+}
+
+.hero__content {
+  position: relative;
+  z-index: 1;
+  max-width: 800px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-lg);
+}
+
+.hero__eyebrow {
+  font-family: var(--font-mechanical);
+  font-size: 11px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--ink-gold);
+  opacity: 0.7;
+}
+
+.hero__headline {
+  font-family: var(--font-display);
+  font-weight: 300;
+  font-size: clamp(36px, 6vw, 64px);
+  line-height: 1.1;
+  color: var(--ink-parchment);
+  letter-spacing: -0.02em;
+}
+
+.hero__sub {
+  font-family: var(--font-body);
+  font-style: italic;
+  font-size: 18px;
+  line-height: 1.6;
+  color: rgba(245, 230, 200, 0.6);
+  max-width: 480px;
+}
+
+/* CTA pill button */
+.btn-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: 14px 36px;
+  border-radius: 40px;
+  border: 1px solid var(--ink-gold);
+  background: transparent;
+  font-family: var(--font-ui);
+  font-weight: 500;
+  font-size: 12px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--ink-gold);
+  text-decoration: none;
+  transition: background var(--duration-fast) ease,
+              color var(--duration-fast) ease,
+              border-color var(--duration-fast) ease;
+  cursor: pointer;
+}
+
+.btn-cta:hover {
+  background: var(--ink-amber);
+  border-color: var(--ink-amber);
+  color: var(--ink-parchment);
+}
+
+/* Decorative quill motif (pure CSS/SVG inline) */
+.hero__quill {
+  opacity: 0.2;
+  margin-top: var(--space-sm);
+}
+
+/* Scroll indicator — animated pulsing line */
+.scroll-indicator {
+  position: absolute;
+  bottom: 32px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.scroll-indicator__line {
+  width: 1px;
+  height: 40px;
+  background: linear-gradient(
+    to bottom,
+    rgba(201, 151, 74, 0.6),
+    rgba(201, 151, 74, 0)
+  );
+  animation: scrollPulse 2s ease-in-out infinite;
+}
+
+@keyframes scrollPulse {
+  0%, 100% { opacity: 0.3; transform: scaleY(0.7); transform-origin: top; }
+  50%       { opacity: 1;   transform: scaleY(1);   transform-origin: top; }
+}
+
+/* ---- How It Works Section --------------------------------- */
+.how-it-works {
+  padding: var(--space-2xl) var(--space-lg);
+  background: #12100D;
+}
+
+.section-header {
+  text-align: center;
+  margin-bottom: var(--space-2xl);
+}
+
+.section-label {
+  font-family: var(--font-mechanical);
+  font-size: 11px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--ink-gold);
+  opacity: 0.6;
+  margin-bottom: var(--space-md);
+}
+
+.section-title {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: clamp(28px, 4vw, 44px);
+  color: var(--ink-parchment);
+  line-height: 1.15;
+}
+
+/* 3-column step grid */
+.steps-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-xl);
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+.step-card {
+  padding: var(--space-lg) var(--space-lg) var(--space-lg) calc(var(--space-lg) + 6px);
+  border-left: 2px solid var(--ink-amber);
+}
+
+.step-number {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 72px;
+  line-height: 1;
+  color: rgba(201, 151, 74, 0.13);
+  margin-bottom: var(--space-sm);
+  letter-spacing: -2px;
+}
+
+.step-title {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 22px;
+  color: var(--ink-parchment);
+  margin-bottom: var(--space-sm);
+}
+
+.step-desc {
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.7;
+  color: rgba(245, 230, 200, 0.55);
+}
+
+@media (max-width: 768px) {
+  .steps-grid {
+    grid-template-columns: 1fr;
+    max-width: 480px;
+  }
+}
+
+/* ---- Time Capsule Feature Section ------------------------- */
+.feature-capsule {
+  padding: var(--space-2xl) var(--space-lg);
+  background: var(--ink-void);
+}
+
+.feature-capsule__inner {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-2xl);
+  max-width: 1000px;
+  margin: 0 auto;
+  align-items: center;
+}
+
+.feature-capsule__copy {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+.feature-capsule__headline {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: clamp(26px, 3.5vw, 44px);
+  color: var(--ink-parchment);
+  line-height: 1.2;
+}
+
+.feature-capsule__body {
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.8;
+  color: rgba(245, 230, 200, 0.6);
+}
+
+/* CSS Envelope Illustration */
+.envelope-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+.envelope-date-tag {
+  font-family: var(--font-mechanical);
+  font-size: 12px;
+  letter-spacing: 1px;
+  color: var(--ink-gold);
+  opacity: 0.75;
+  background: rgba(201, 151, 74, 0.1);
+  border: 1px solid rgba(201, 151, 74, 0.25);
+  border-radius: 3px;
+  padding: 4px 12px;
+}
+
+.envelope {
+  position: relative;
+  width: 240px;
+  height: 168px;
+  background: linear-gradient(160deg, #E8D5B0 0%, #D4BC8A 100%);
+  border-radius: 4px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5), 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* Envelope flap (top triangle) */
+.envelope::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 84px;
+  background: linear-gradient(160deg, #DCC89A 0%, #C4AA75 100%);
+  clip-path: polygon(0 0, 100% 0, 50% 68%);
+  border-radius: 4px 4px 0 0;
+}
+
+/* Envelope bottom V-fold */
+.envelope::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 84px;
+  background: linear-gradient(0deg, #C8AE80 0%, transparent 100%);
+  clip-path: polygon(0 100%, 100% 100%, 50% 32%);
+}
+
+/* Wax seal on envelope */
+.envelope__seal {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #8B1A1A, #4A0808);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 100, 100, 0.15);
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.envelope__seal::after {
+  content: 'I';
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 16px;
+  color: rgba(245, 200, 160, 0.6);
+}
+
+@media (max-width: 768px) {
+  .feature-capsule__inner {
+    grid-template-columns: 1fr;
+  }
+  .envelope-wrap {
+    order: -1;
+  }
+}
+
+/* ---- Footer ----------------------------------------------- */
+.site-footer {
+  padding: var(--space-xl) var(--space-lg);
+  background: var(--ink-void);
+  border-top: 1px solid rgba(201, 151, 74, 0.1);
+}
+
+.footer__inner {
+  max-width: 960px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-md);
+  text-align: center;
+}
+
+.footer__logo {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 16px;
+  letter-spacing: 3px;
+  color: var(--ink-gold);
+  opacity: 0.5;
+  text-transform: uppercase;
+}
+
+.footer__tagline {
+  font-family: var(--font-body);
+  font-style: italic;
+  font-size: 13px;
+  color: rgba(245, 230, 200, 0.3);
+}
+
+.footer__links {
+  display: flex;
+  gap: var(--space-lg);
+}
+
+.footer__links a {
+  font-family: var(--font-ui);
+  font-size: 12px;
+  color: rgba(245, 230, 200, 0.3);
+  text-decoration: none;
+  transition: color var(--duration-fast) ease;
+}
+
+.footer__links a:hover {
+  color: rgba(245, 230, 200, 0.6);
+}
+
+.footer__copy {
+  font-family: var(--font-ui);
+  font-size: 11px;
+  color: rgba(245, 230, 200, 0.2);
+}

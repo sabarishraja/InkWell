@@ -1,0 +1,266 @@
+/* ============================================================
+   INKWELL — GLOBAL CSS
+   Design tokens, resets, typography, shared utilities.
+   Every page links this file first.
+============================================================ */
+
+/* ---- Google Fonts ----------------------------------------- */
+@import url('https://fonts.googleapis.com/css2?family=Pinyon+Script&family=Special+Elite&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&family=Lora:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500&display=swap');
+
+@font-face {
+  font-family: 'JMH Typewriter';
+  src: url('/JMH Typewriter-Black.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+/* ---- Design Tokens ---------------------------------------- */
+:root {
+  /* Colors */
+  --ink-void:      #0D0B09;
+  --ink-walnut:    #1A1208;
+  --ink-mahogany:  #2C1A0E;
+  --ink-amber:     #7B4F2E;
+  --ink-gold:      #C9974A;
+  --ink-parchment: #F5E6C8;
+  --ink-linen:     #EDE4D4;
+  --ink-aged:      #D4BC8A;
+  --ink-sepia:     #2C1810;
+  --ink-navy:      #1A2744;
+  --ink-midnight:  #0F0F0F;
+  --ink-ghost:     rgba(245, 230, 200, 0.06);
+  --ink-line:      #E8D5B7;
+
+  /* Typography */
+  --font-cursive:    'JMH Typewriter', monospace;
+  --font-mechanical: 'Special Elite', cursive;
+  --font-display:    'Cormorant Garamond', serif;
+  --font-body:       'Lora', serif;
+  --font-ui:         'DM Sans', sans-serif;
+
+  /* Spacing */
+  --space-xs:  4px;
+  --space-sm:  8px;
+  --space-md:  16px;
+  --space-lg:  24px;
+  --space-xl:  48px;
+  --space-2xl: 80px;
+
+  /* Paper */
+  --paper-width:       680px;
+  --paper-height:      860px;
+  --paper-margin:      64px;
+  --paper-line-height: 42px;
+  --paper-font-size:   22px;
+
+  /* Easing */
+  --ease-out:    cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+
+  /* Durations */
+  --duration-fast: 150ms;
+  --duration-mid:  300ms;
+  --duration-slow: 600ms;
+
+  /* Shadows */
+  --shadow-paper: 0 8px 40px rgba(0, 0, 0, 0.6), 0 2px 8px rgba(0, 0, 0, 0.4);
+  --shadow-lift:  0 20px 60px rgba(0, 0, 0, 0.7), 0 4px 16px rgba(0, 0, 0, 0.5);
+}
+
+/* ---- Full Reset ------------------------------------------- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body, #root {
+  height: 100%;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  min-height: 100%;
+  background-color: var(--ink-void);
+  color: var(--ink-parchment);
+  font-family: var(--font-body);
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+img,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+ul,
+ol {
+  list-style: none;
+}
+
+button {
+  cursor: pointer;
+  background: none;
+  border: none;
+  font: inherit;
+  color: inherit;
+}
+
+input,
+textarea,
+select {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: none;
+  outline: none;
+}
+
+/* ---- Text Selection --------------------------------------- */
+::selection {
+  background: var(--ink-amber);
+  color: var(--ink-parchment);
+}
+
+/* ---- Focus Styles (amber, no browser default) ------------ */
+*:focus-visible {
+  outline: 2px solid var(--ink-gold);
+  outline-offset: 2px;
+}
+
+/* ---- Reduced Motion --------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ---- Shared Desk Background ------------------------------- */
+.desk-bg {
+  background-color: var(--ink-walnut);
+  background-image:
+    radial-gradient(ellipse at 50% 80%, #2C1A0E 0%, transparent 60%),
+    radial-gradient(ellipse at 20% 20%, #1F1208 0%, transparent 50%),
+    repeating-linear-gradient(
+      92deg,
+      transparent,
+      transparent 2px,
+      rgba(255, 255, 255, 0.012) 2px,
+      rgba(255, 255, 255, 0.012) 3px
+    ),
+    repeating-linear-gradient(
+      88deg,
+      transparent,
+      transparent 4px,
+      rgba(0, 0, 0, 0.07) 4px,
+      rgba(0, 0, 0, 0.07) 5px
+    ),
+    repeating-linear-gradient(
+      91deg,
+      transparent,
+      transparent 20px,
+      rgba(80, 35, 10, 0.15) 20px,
+      rgba(80, 35, 10, 0.15) 40px
+    ),
+    linear-gradient(160deg, #1A1208 0%, #0D0B09 100%);
+}
+
+/* ---- Shared Paper Structure ------------------------------- */
+.paper {
+  position: relative;
+  width: var(--paper-width);
+  background-color: var(--ink-parchment);
+  background-image: url('/paper.jpg');
+  background-size: cover;
+  background-position: center;
+  box-shadow: var(--shadow-paper);
+  overflow: hidden;
+}
+
+.paper.paper-linen {
+  background-color: var(--ink-linen);
+}
+
+.paper.paper-aged {
+  background-color: var(--ink-aged);
+  filter: sepia(0.3) contrast(0.95);
+}
+
+/* Writing lines drawn via repeating gradient */
+.paper-lines {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: repeating-linear-gradient(
+    to bottom,
+    transparent,
+    transparent 41px,
+    var(--ink-line) 41px,
+    var(--ink-line) 42px
+  );
+  background-position: 0 var(--paper-margin);
+}
+
+/* ---- Scroll-Reveal Animations ----------------------------- */
+[data-animate] {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity var(--duration-slow) var(--ease-out),
+              transform var(--duration-slow) var(--ease-out);
+}
+
+[data-animate].in-view {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Stagger delays for grouped elements */
+[data-animate][data-delay="1"] { transition-delay: 100ms; }
+[data-animate][data-delay="2"] { transition-delay: 200ms; }
+[data-animate][data-delay="3"] { transition-delay: 300ms; }
+[data-animate][data-delay="4"] { transition-delay: 400ms; }
+[data-animate][data-delay="5"] { transition-delay: 500ms; }
+
+/* ---- Visually Hidden (accessibility) ---------------------- */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ---- Shared grain overlay (via SVG filter) ---------------- */
+.grain-overlay {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.035;
+  background: transparent;
+  filter: url(#grain);
+  width: 100%;
+  height: 100%;
+}
