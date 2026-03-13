@@ -25,6 +25,12 @@
   margin-bottom: var(--space-xl);
 }
 
+.letter-view-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
 .back-btn {
   font-family: var(--font-mechanical);
   font-size: 11px;
@@ -47,6 +53,37 @@
 .back-btn::before {
   content: '←';
   font-size: 14px;
+}
+
+.download-btn {
+  font-family: var(--font-mechanical);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(201, 151, 74, 0.55);
+  background: none;
+  border: 1px solid rgba(201, 151, 74, 0.2);
+  cursor: pointer;
+  padding: 8px 14px;
+  transition: color var(--duration-fast), border-color var(--duration-fast),
+              background var(--duration-fast);
+}
+.download-btn:hover {
+  color: rgba(201, 151, 74, 0.9);
+  border-color: rgba(201, 151, 74, 0.45);
+  background: rgba(201, 151, 74, 0.06);
+}
+.download-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.export-error {
+  font-family: var(--font-body);
+  font-size: 13px;
+  color: #c47070;
+  font-style: italic;
+  margin-bottom: var(--space-md);
 }
 
 .delete-btn {

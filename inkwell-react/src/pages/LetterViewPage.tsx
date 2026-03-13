@@ -7,6 +7,9 @@
  *
  * A delete button triggers a confirmation modal before the letter
  * is permanently removed.
+ *
+ * A "Download as PDF" button calls the inkwell-backend PDF export
+ * endpoint, which uses Puppeteer to render a pixel-perfect parchment PDF.
  */
 
 import { useState, useEffect } from 'react';
@@ -14,19 +17,24 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import { Nav }         from '../components/layout/Nav';
 import { useLetters }  from '../hooks/useLetters';
 import { formatDate }  from '../lib/utils';
+import { supabase }    from '../lib/supabaseClient';
 import type { Letter } from '../types/letter';
 import '../styles/letter.css';
+
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
 
 export function LetterViewPage() {
   const { id }                         = useParams<{ id: string }>();
   const navigate                       = useNavigate();
   const { getLetter, deleteLetter }    = useLetters();
 
-  const [letter,    setLetter]    = useState<Letter | null>(null);
-  const [loading,   setLoading]   = useState(true);
-  const [notFound,  setNotFound]  = useState(false);
+  const [letter,      setLetter]      = useState<Letter | null>(null);
+  const [loading,     setLoading]     = useState(true);
+  const [notFound,    setNotFound]    = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
-  const [deleting,  setDeleting]  = useState(false);
+  const [deleting,    setDeleting]    = useState(false);
+  const [exporting,   setExporting]   = useState(false);
+  const [exportError, setExportError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!id) { setNotFound(true); setLoading(false); return; }
@@ -44,6 +52,43 @@ export function LetterViewPage() {
     const ok = await deleteLetter(id);
     if (ok) navigate('/dashboard', { replace: true });
     else setDeleting(false);
+  };
+
+  const handleDownloadPdf = async () => {
+    if (!id || !letter) return;
+    setExporting(true);
+    setExportError(null);
+
+    try {
+      // Get the current session JWT to authenticate the backend request
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) throw new Error('Not authenticated.');
+
+      const res = await fetch(`${API_URL}/api/letters/${id}/export-pdf`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${session.access_token}` },
+      });
+
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        throw new Error(body.error || `Server error ${res.status}`);
+      }
+
+      // Trigger browser download
+      const blob = await res.blob();
+      const url  = URL.createObjectURL(blob);
+      const a    = document.createElement('a');
+      a.href     = url;
+      a.download = `${letter.title.replace(/[^\w\s\-]/g, '').trim() || 'letter'}.pdf`;
+      a.click();
+      URL.revokeObjectURL(url);
+
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Failed to export PDF.';
+      setExportError(msg);
+    } finally {
+      setExporting(false);
+    }
   };
 
   // ---- Loading -------------------------------------------------------
@@ -88,14 +133,29 @@ export function LetterViewPage() {
           <Link to="/dashboard" className="back-btn" aria-label="Back to my letters">
             My Letters
           </Link>
-          <button
-            className="delete-btn"
-            onClick={() => setShowConfirm(true)}
-            aria-label="Delete this letter"
-          >
-            Delete
-          </button>
+          <div className="letter-view-actions">
+            <button
+              className="download-btn"
+              onClick={handleDownloadPdf}
+              disabled={exporting}
+              aria-busy={exporting}
+              aria-label="Download as PDF"
+            >
+              {exporting ? 'Generating…' : 'Download PDF'}
+            </button>
+            <button
+              className="delete-btn"
+              onClick={() => setShowConfirm(true)}
+              aria-label="Delete this letter"
+            >
+              Delete
+            </button>
+          </div>
         </div>
+
+        {exportError && (
+          <p className="export-error" role="alert">{exportError}</p>
+        )}
 
         {/* Meta */}
         <div className="letter-view-meta">
