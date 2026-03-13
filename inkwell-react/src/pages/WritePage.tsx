@@ -1,3 +1,4 @@
+// @ts-nocheck — superseded page, kept for reference only
 /**
  * WritePage.tsx — The core typewriter writing experience.
  *

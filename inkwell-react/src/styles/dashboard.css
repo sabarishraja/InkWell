@@ -1,0 +1,147 @@
+/* ================================================================
+   dashboard.css — Letters list / user dashboard
+   ================================================================ */
+
+.dashboard-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.dashboard-content {
+  flex: 1;
+  max-width: 680px;
+  width: 100%;
+  margin: 0 auto;
+  padding: var(--space-xl) var(--space-lg);
+}
+
+/* ---- Header ------------------------------------------------------ */
+
+.dashboard-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-md);
+  margin-bottom: var(--space-2xl);
+  padding-bottom: var(--space-lg);
+  border-bottom: 1px solid rgba(245, 230, 200, 0.08);
+}
+
+.dashboard-title {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 4vw, 2.8rem);
+  font-weight: 300;
+  color: var(--ink-parchment);
+  letter-spacing: 0.02em;
+}
+
+.compose-btn {
+  flex-shrink: 0;
+  font-family: var(--font-mechanical);
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-parchment);
+  background: transparent;
+  border: 1px solid rgba(245, 230, 200, 0.25);
+  padding: 10px 20px;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: background var(--duration-fast) var(--ease-out),
+              border-color var(--duration-fast) var(--ease-out);
+}
+.compose-btn:hover {
+  background: rgba(245, 230, 200, 0.05);
+  border-color: rgba(245, 230, 200, 0.45);
+}
+.compose-btn::before {
+  content: '+';
+  font-size: 14px;
+  line-height: 1;
+}
+
+/* ---- Letters list ------------------------------------------------ */
+
+.letters-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.letter-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-lg) 0;
+  border-bottom: 1px solid rgba(245, 230, 200, 0.06);
+  text-decoration: none;
+  cursor: pointer;
+  transition: padding-left var(--duration-fast) var(--ease-out);
+}
+.letter-item:first-child {
+  padding-top: 0;
+}
+.letter-item:hover {
+  padding-left: var(--space-sm);
+}
+
+.letter-item__body {
+  flex: 1;
+  min-width: 0;
+}
+
+.letter-item__title {
+  font-family: var(--font-mechanical);
+  font-size: 17px;
+  color: var(--ink-parchment);
+  letter-spacing: 0.04em;
+  margin-bottom: 5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.letter-item__date {
+  font-family: var(--font-body);
+  font-size: 12px;
+  color: rgba(245, 230, 200, 0.35);
+  font-style: italic;
+}
+
+.letter-item__arrow {
+  color: rgba(245, 230, 200, 0.2);
+  font-family: var(--font-mechanical);
+  font-size: 18px;
+  margin-left: var(--space-md);
+  flex-shrink: 0;
+  transition: color var(--duration-fast), transform var(--duration-fast);
+}
+.letter-item:hover .letter-item__arrow {
+  color: var(--ink-gold);
+  transform: translateX(4px);
+}
+
+/* ---- Empty state ------------------------------------------------- */
+
+.letters-empty {
+  padding: var(--space-2xl) 0;
+  text-align: center;
+}
+
+.letters-empty__icon {
+  font-size: 40px;
+  opacity: 0.15;
+  margin-bottom: var(--space-lg);
+}
+
+.letters-empty__text {
+  font-family: var(--font-body);
+  font-size: 16px;
+  color: rgba(245, 230, 200, 0.3);
+  font-style: italic;
+  line-height: 1.6;
+}

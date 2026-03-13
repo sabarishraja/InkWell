@@ -1,0 +1,223 @@
+/* ================================================================
+   letter.css — Read-only letter view page
+   ================================================================ */
+
+.letter-view-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.letter-view-content {
+  flex: 1;
+  max-width: 720px;
+  width: 100%;
+  margin: 0 auto;
+  padding: var(--space-xl) var(--space-lg);
+}
+
+/* ---- Top bar: back + delete -------------------------------------- */
+
+.letter-view-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-xl);
+}
+
+.back-btn {
+  font-family: var(--font-mechanical);
+  font-size: 11px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: rgba(245, 230, 200, 0.35);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: color var(--duration-fast) var(--ease-out);
+  text-decoration: none;
+}
+.back-btn:hover {
+  color: var(--ink-parchment);
+}
+.back-btn::before {
+  content: '←';
+  font-size: 14px;
+}
+
+.delete-btn {
+  font-family: var(--font-mechanical);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(180, 80, 80, 0.45);
+  background: none;
+  border: 1px solid rgba(180, 80, 80, 0.18);
+  cursor: pointer;
+  padding: 8px 14px;
+  transition: color var(--duration-fast), border-color var(--duration-fast),
+              background var(--duration-fast);
+}
+.delete-btn:hover {
+  color: rgba(220, 100, 100, 0.9);
+  border-color: rgba(220, 100, 100, 0.4);
+  background: rgba(220, 100, 100, 0.06);
+}
+
+/* ---- Letter meta (title + date) ---------------------------------- */
+
+.letter-view-meta {
+  margin-bottom: var(--space-xl);
+}
+
+.letter-view-title {
+  font-family: var(--font-display);
+  font-size: clamp(1.8rem, 4vw, 2.8rem);
+  font-weight: 300;
+  color: var(--ink-parchment);
+  letter-spacing: 0.02em;
+  line-height: 1.2;
+  margin-bottom: var(--space-sm);
+}
+
+.letter-view-date {
+  font-family: var(--font-body);
+  font-size: 13px;
+  color: rgba(245, 230, 200, 0.3);
+  font-style: italic;
+}
+
+/* ---- Paper body -------------------------------------------------- */
+
+.letter-paper {
+  background: var(--ink-parchment);
+  color: var(--ink-sepia);
+  font-family: var(--font-cursive);
+  font-size: 20px;
+  line-height: 2;
+  padding: 52px 60px;
+  box-shadow: var(--shadow-paper);
+  word-break: break-word;
+  position: relative;
+}
+
+/* Ruled lines matching the typewriter paper aesthetic */
+.letter-paper::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: repeating-linear-gradient(
+    transparent,
+    transparent calc(2em - 1px),
+    rgba(44, 26, 14, 0.07) calc(2em - 1px),
+    rgba(44, 26, 14, 0.07) 2em
+  );
+  background-position: 0 calc(52px + 1em);
+  pointer-events: none;
+}
+
+.letter-paper-body {
+  position: relative; /* above the ruled lines pseudo-element */
+  white-space: pre-wrap;
+}
+
+/* ---- Delete confirmation modal ----------------------------------- */
+
+.confirm-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.72);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  backdrop-filter: blur(6px);
+  animation: fadeIn var(--duration-fast) var(--ease-out);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.confirm-modal {
+  background: var(--ink-mahogany);
+  border: 1px solid rgba(245, 230, 200, 0.1);
+  padding: var(--space-xl) var(--space-xl);
+  max-width: 360px;
+  width: 90%;
+  text-align: center;
+  animation: slideUp var(--duration-mid) var(--ease-out);
+}
+
+@keyframes slideUp {
+  from { transform: translateY(20px); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+
+.confirm-title {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 300;
+  color: var(--ink-parchment);
+  margin-bottom: var(--space-sm);
+}
+
+.confirm-sub {
+  font-family: var(--font-body);
+  font-size: 14px;
+  color: rgba(245, 230, 200, 0.45);
+  font-style: italic;
+  line-height: 1.65;
+  margin-bottom: var(--space-xl);
+}
+
+.confirm-actions {
+  display: flex;
+  gap: var(--space-md);
+  justify-content: center;
+}
+
+.confirm-cancel {
+  font-family: var(--font-mechanical);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(245, 230, 200, 0.45);
+  background: none;
+  border: 1px solid rgba(245, 230, 200, 0.15);
+  cursor: pointer;
+  padding: 10px 22px;
+  transition: color var(--duration-fast), border-color var(--duration-fast);
+}
+.confirm-cancel:hover {
+  color: var(--ink-parchment);
+  border-color: rgba(245, 230, 200, 0.35);
+}
+
+.confirm-delete {
+  font-family: var(--font-mechanical);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(220, 100, 100, 0.85);
+  background: rgba(220, 100, 100, 0.08);
+  border: 1px solid rgba(220, 100, 100, 0.3);
+  cursor: pointer;
+  padding: 10px 22px;
+  transition: background var(--duration-fast), border-color var(--duration-fast),
+              color var(--duration-fast);
+}
+.confirm-delete:hover {
+  background: rgba(220, 100, 100, 0.16);
+  border-color: rgba(220, 100, 100, 0.55);
+  color: rgba(220, 100, 100, 1);
+}
+.confirm-delete:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

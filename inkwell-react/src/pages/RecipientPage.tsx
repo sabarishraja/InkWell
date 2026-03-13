@@ -1,3 +1,4 @@
+// @ts-nocheck — superseded page, kept for reference only
 /**
  * RecipientPage.tsx — Private letter reading experience.
  *

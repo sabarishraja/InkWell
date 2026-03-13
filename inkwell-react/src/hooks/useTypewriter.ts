@@ -270,7 +270,10 @@ export function useTypewriter(config: TypewriterConfig): TypewriterController {
 
   // ---- Click refocus -------------------------------------------
   const handleDocClick = useCallback((e: MouseEvent) => {
-    const target = e.target as Element;
+    const target = e.target as HTMLElement;
+    // Never steal focus from native interactive elements (e.g., title input)
+    const tag = target.tagName;
+    if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || tag === 'BUTTON') return;
     if (
       typingEnabled.current &&
       !target.closest('.design-controls') &&
@@ -311,7 +314,7 @@ export function useTypewriter(config: TypewriterConfig): TypewriterController {
     const cursor = cursorRef.current;
     const area   = typingAreaRef.current;
     if (cursor) cursor.style.display = 'block';
-    if (area)   { area.focus(); updateCursorPosition(); }
+    if (area)   { area.focus(); requestAnimationFrame(updateCursorPosition); }
   }, [updateCursorPosition]);
 
   const setReadOnly = useCallback((readonly: boolean) => {

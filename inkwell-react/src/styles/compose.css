@@ -1,0 +1,129 @@
+/* ================================================================
+   compose.css — Compose a new letter page
+   ================================================================ */
+
+.compose-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.compose-desk {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--space-lg) var(--space-md) var(--space-xl);
+  gap: var(--space-lg);
+}
+
+/* ---- Title input ------------------------------------------------- */
+
+.compose-title-wrap {
+  width: var(--paper-width);
+  max-width: 100%;
+}
+
+.compose-title-input {
+  width: 100%;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid rgba(245, 230, 200, 0.12);
+  color: var(--ink-parchment);
+  font-family: var(--font-mechanical);
+  font-size: 26px;
+  letter-spacing: 0.04em;
+  padding: var(--space-sm) 0;
+  outline: none;
+  transition: border-bottom-color var(--duration-mid) var(--ease-out);
+  caret-color: var(--ink-gold);
+}
+.compose-title-input::placeholder {
+  color: rgba(245, 230, 200, 0.2);
+}
+.compose-title-input:focus {
+  border-bottom-color: rgba(245, 230, 200, 0.32);
+}
+
+/* ---- Paper + typewriter frame ------------------------------------ */
+
+/* Re-uses .typewriter-frame, .paper-guide, .pages-container, .page-sheet
+   and .paper from write.css / global.css. Only compose-specific overrides
+   are needed here. */
+
+/* Align typing area top with the ruled lines (64px margin + 2 line-heights = 148px) */
+.compose-page .typing-area {
+  top: calc(var(--paper-margin) + calc(var(--paper-line-height) * 2));
+}
+
+.compose-paper-area {
+  width: var(--paper-width);
+  max-width: 100%;
+  cursor: text;
+}
+
+/* The date shown on the paper header */
+.compose-date {
+  font-family: var(--font-mechanical);
+  font-size: 14px;
+  letter-spacing: 0.08em;
+  color: rgba(44, 24, 16, 0.5);
+  text-align: right;
+  margin-bottom: var(--space-md);
+  position: relative;
+  z-index: 1;
+}
+
+/* ---- Save button ------------------------------------------------- */
+
+.save-btn {
+  font-family: var(--font-mechanical);
+  font-size: 12px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(245, 230, 200, 0.25);
+  background: transparent;
+  border: 1px solid rgba(245, 230, 200, 0.1);
+  padding: 14px 36px;
+  cursor: default;
+  pointer-events: none;
+  transition: color var(--duration-mid) var(--ease-out),
+              border-color var(--duration-mid) var(--ease-out),
+              background var(--duration-mid) var(--ease-out);
+}
+
+.save-btn--ready {
+  color: var(--ink-parchment);
+  border-color: rgba(245, 230, 200, 0.3);
+  cursor: pointer;
+  pointer-events: auto;
+}
+.save-btn--ready:hover {
+  background: rgba(245, 230, 200, 0.06);
+  border-color: rgba(245, 230, 200, 0.55);
+}
+.save-btn--ready:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ---- Error message ----------------------------------------------- */
+
+.compose-error {
+  font-family: var(--font-body);
+  font-size: 13px;
+  color: #c47070;
+  font-style: italic;
+  text-align: center;
+}
+
+/* ---- Hint text --------------------------------------------------- */
+
+.compose-hint {
+  font-family: var(--font-body);
+  font-size: 12px;
+  color: rgba(245, 230, 200, 0.2);
+  letter-spacing: 0.06em;
+  font-style: italic;
+  text-align: center;
+}

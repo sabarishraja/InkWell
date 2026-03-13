@@ -1,53 +1,43 @@
 -- ============================================================
--- Inkwell — Initial Database Schema
+-- Inkwell — Database Schema
 -- Run in: Supabase Dashboard → SQL Editor
 -- ============================================================
 
--- ---- Letters table ------------------------------------------
+DROP TABLE IF EXISTS nudge_usage;
+DROP TABLE IF EXISTS letters;
+
+-- ---- Letters table -------------------------------------------
+-- Each letter belongs to one user, has a title, body, and creation
+-- timestamp. Once saved a letter is immutable — there is intentionally
+-- no UPDATE policy.
+
 CREATE TABLE letters (
-  id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id         UUID REFERENCES auth.users(id) ON DELETE CASCADE NOT NULL,
-  content         TEXT NOT NULL DEFAULT '',
-  recipient_email TEXT NOT NULL DEFAULT '',
-  deliver_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  sent            BOOLEAN NOT NULL DEFAULT FALSE,
-  created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  -- Extended metadata
-  recipient_name  TEXT DEFAULT '',
-  paper_style     TEXT DEFAULT 'parchment' CHECK (paper_style IN ('parchment', 'linen', 'aged')),
-  ink_color       TEXT DEFAULT 'sepia'     CHECK (ink_color    IN ('sepia', 'navy', 'midnight')),
-  delivery_type   TEXT DEFAULT 'now'       CHECK (delivery_type IN ('now', 'scheduled', 'surprise')),
-  status          TEXT DEFAULT 'sealed'    CHECK (status        IN ('sealed', 'delivered', 'opened'))
+  id         UUID        PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id    UUID        REFERENCES auth.users(id) ON DELETE CASCADE NOT NULL,
+  title      TEXT        NOT NULL,
+  body       TEXT        NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
--- Index for vault queries (user's letters sorted by delivery date)
-CREATE INDEX letters_user_deliver ON letters (user_id, deliver_at);
+-- Index for dashboard query: user's letters ordered newest-first
+CREATE INDEX letters_user_created ON letters (user_id, created_at DESC);
 
--- Row Level Security — users can only access their own letters
+-- ---- Row Level Security --------------------------------------
 ALTER TABLE letters ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY "Users own their letters"
-ON letters FOR ALL
-USING (auth.uid() = user_id)
-WITH CHECK (auth.uid() = user_id);
+-- Users may read their own letters
+CREATE POLICY "select_own_letters"
+  ON letters FOR SELECT
+  USING (auth.uid() = user_id);
 
--- ---- Nudge usage table (rate limiting for AI nudge) ----------
-CREATE TABLE nudge_usage (
-  id       UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id  UUID REFERENCES auth.users(id) ON DELETE CASCADE NOT NULL,
-  used_at  TIMESTAMPTZ NOT NULL DEFAULT NOW()
-);
+-- Users may insert their own letters
+CREATE POLICY "insert_own_letters"
+  ON letters FOR INSERT
+  WITH CHECK (auth.uid() = user_id);
 
-CREATE INDEX nudge_usage_user_day ON nudge_usage (user_id, used_at);
+-- Users may delete their own letters
+CREATE POLICY "delete_own_letters"
+  ON letters FOR DELETE
+  USING (auth.uid() = user_id);
 
-ALTER TABLE nudge_usage ENABLE ROW LEVEL SECURITY;
-
-CREATE POLICY "Users own their nudge usage"
-ON nudge_usage FOR ALL
-USING (auth.uid() = user_id)
-WITH CHECK (auth.uid() = user_id);
-
--- ---- Scheduled delivery function (optional) ------------------
--- TODO: Replace with Supabase cron + Resend API for real email delivery.
--- This function marks letters as delivered when their deliver_at time passes.
--- Wire to pg_cron: SELECT cron.schedule('deliver-letters', '*/15 * * * *', $$...$$);
+-- NO UPDATE POLICY — letters are immutable once saved.

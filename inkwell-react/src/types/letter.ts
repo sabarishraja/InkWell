@@ -1,28 +1,24 @@
 /**
- * letter.ts — Shared TypeScript types for Inkwell.
- * Matches the Supabase `letters` table schema exactly.
+ * letter.ts — Core types for the Inkwell letters system.
  */
 
-export type PaperStyle = 'parchment' | 'linen' | 'aged';
-export type InkColor = 'sepia' | 'navy' | 'midnight';
-export type DeliveryType = 'now' | 'scheduled' | 'surprise';
-export type LetterStatus = 'sealed' | 'delivered' | 'opened';
-
+/** A letter as stored in and returned from Supabase. */
 export interface Letter {
-  id: string;
-  user_id: string;
-  content: string;             // HTML (preserves <br> tags from contenteditable)
-  recipient_email: string;
-  deliver_at: string;          // ISO timestamptz
-  sent: boolean;
-  created_at: string;          // ISO timestamptz
-  // Extended metadata stored alongside the letter
-  recipient_name: string;
-  paper_style: PaperStyle;
-  ink_color: InkColor;
-  delivery_type: DeliveryType;
-  status: LetterStatus;
+  id:         string;
+  user_id:    string;
+  title:      string;
+  body:       string;       // Raw HTML from contenteditable (<br> tags preserved)
+  created_at: string;       // ISO timestamptz
 }
 
-// Used when creating a new letter — id, user_id, created_at come from Supabase
-export type NewLetter = Omit<Letter, 'id' | 'user_id' | 'created_at'>;
+/** Shape required to create a new letter. */
+export type NewLetter = Pick<Letter, 'title' | 'body'>;
+
+// ---------------------------------------------------------------------------
+// Legacy type aliases — kept so older components that have not yet been
+// removed from the project continue to compile.
+// ---------------------------------------------------------------------------
+export type PaperStyle   = 'parchment' | 'linen' | 'aged';
+export type InkColor     = 'sepia' | 'navy' | 'midnight';
+export type DeliveryType = 'now' | 'scheduled' | 'surprise';
+export type LetterStatus = 'sealed' | 'delivered' | 'opened';

@@ -1,3 +1,4 @@
+// @ts-nocheck — superseded page, kept for reference only
 /**
  * VaultPage.tsx — The user's sealed letters vault.
  *

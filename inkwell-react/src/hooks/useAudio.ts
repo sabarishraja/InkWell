@@ -38,6 +38,7 @@ export function useAudio(): AudioControls {
   // Howl instances stored in refs so they persist across renders
   const clackRef      = useRef<Howl | null>(null);
   const returnRef     = useRef<Howl | null>(null);
+  const dingRef       = useRef<Howl | null>(null);
   const tearRef       = useRef<Howl | null>(null);
   const ambientRef    = useRef<Howl | null>(null);
   const mutedRef      = useRef<boolean>(false);
@@ -62,6 +63,15 @@ export function useAudio(): AudioControls {
     });
     returnRef.current = ret;
 
+    // Ding — same file played at high rate to simulate bell
+    const ding = new Howl({
+      src: [`${base}carriage_return_lever.mp3`],
+      volume: 0.2,
+      rate: 2.8,
+      onloaderror: (_id, err) => { console.error('Failed to load ding:', err); },
+    });
+    dingRef.current = ding;
+
     // Paper tear (seal event)
     const tear = new Howl({
       src: [`${base}paper_tearing_at_end.mp3`],
@@ -82,11 +92,13 @@ export function useAudio(): AudioControls {
     return () => {
       clack.unload();
       ret.unload();
+      ding.unload();
       tear.unload();
       ambient.unload();
       // Clear refs so stale instances aren't used after unmount
       clackRef.current   = null;
       returnRef.current  = null;
+      dingRef.current    = null;
       tearRef.current    = null;
       ambientRef.current = null;
     };
@@ -114,7 +126,7 @@ export function useAudio(): AudioControls {
 
   const playDing = useCallback(() => {
     if (mutedRef.current) return;
-    // Ding removed to solely rely on explicit sound files.
+    dingRef.current?.play();
   }, []);
 
   const playCarriageReturn = useCallback(() => {

@@ -1,3 +1,4 @@
+// @ts-nocheck — superseded page, kept for reference only
 /**
  * useSealFlow.ts — Seal animation state machine hook.
  *

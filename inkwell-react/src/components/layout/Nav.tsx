@@ -1,18 +1,20 @@
 /**
- * Nav.tsx — Fixed navigation bar shared across Landing, Write, and Vault pages.
- * Recipient page does not render the Nav.
+ * Nav.tsx — Fixed navigation bar, auth-aware.
  *
- * Uses React Router's NavLink to automatically set aria-current="page"
- * on the active route link.
+ * Authenticated:    INKWELL (→ /dashboard) | Compose | Sign Out
+ * Unauthenticated:  INKWELL (→ /)          | Sign In
  */
 
 import { useState, useEffect, useRef } from 'react';
-import { NavLink, Link } from 'react-router-dom';
+import { Link, NavLink, useNavigate } from 'react-router-dom';
+import { useSupabaseAuth } from '../../hooks/useSupabaseAuth';
 import '../../styles/nav.css';
 
 export function Nav() {
-  const [open, setOpen] = useState(false);
-  const navRef = useRef<HTMLElement>(null);
+  const [open, setOpen]   = useState(false);
+  const navRef            = useRef<HTMLElement>(null);
+  const { session, signOut } = useSupabaseAuth();
+  const navigate          = useNavigate();
 
   // Close mobile menu when clicking outside
   useEffect(() => {
@@ -28,6 +30,11 @@ export function Nav() {
   const getLinkClass = ({ isActive }: { isActive: boolean }) =>
     isActive ? 'nav-link nav-link--active' : 'nav-link';
 
+  const handleSignOut = async () => {
+    await signOut();
+    navigate('/auth');
+  };
+
   return (
     <>
       <nav
@@ -35,40 +42,44 @@ export function Nav() {
         className={`site-nav ${open ? 'nav--open' : ''}`}
         aria-label="Main navigation"
       >
-        <Link to="/" className="nav-logo" aria-label="Inkwell — home">
+        <Link
+          to={session ? '/dashboard' : '/'}
+          className="nav-logo"
+          aria-label="Inkwell — home"
+        >
           INKWELL
         </Link>
 
-        {/* Desktop + mobile link list */}
         <ul className="nav-links" id="nav-links" role="list">
-          <li>
-            <NavLink
-              to="/"
-              end
-              className={getLinkClass}
-              aria-label="Go to home page"
-            >
-              Home
-            </NavLink>
-          </li>
-          <li>
-            <NavLink
-              to="/write"
-              className={getLinkClass}
-              aria-label="Write a letter"
-            >
-              Write a Letter
-            </NavLink>
-          </li>
-          <li>
-            <NavLink
-              to="/vault"
-              className={getLinkClass}
-              aria-label="View my vault"
-            >
-              My Vault
-            </NavLink>
-          </li>
+          {session ? (
+            <>
+              <li>
+                <NavLink to="/dashboard" end className={getLinkClass}>
+                  My Letters
+                </NavLink>
+              </li>
+              <li>
+                <NavLink to="/compose" className={getLinkClass}>
+                  Compose
+                </NavLink>
+              </li>
+              <li>
+                <button
+                  className="nav-link nav-signout"
+                  onClick={handleSignOut}
+                  aria-label="Sign out"
+                >
+                  Sign Out
+                </button>
+              </li>
+            </>
+          ) : (
+            <li>
+              <NavLink to="/auth" className={getLinkClass}>
+                Sign In
+              </NavLink>
+            </li>
+          )}
         </ul>
 
         {/* Hamburger (mobile only) */}
