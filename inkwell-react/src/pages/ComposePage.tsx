@@ -38,12 +38,13 @@ export function ComposePage() {
     structureSuggestion?: string | null;
   };
 
-  const [title,      setTitle]      = useState('');
-  const [charCount,  setCharCount]  = useState(0);
-  const [error,      setError]      = useState<string | null>(null);
-  const [loaded,     setLoaded]     = useState(false);
-  const [sealPhase,  setSealPhase]  = useState<SealPhase>('idle');
-  const [showModal,  setShowModal]  = useState(false);
+  const [title,           setTitle]           = useState('');
+  const [charCount,       setCharCount]       = useState(0);
+  const [error,           setError]           = useState<string | null>(null);
+  const [loaded,          setLoaded]          = useState(false);
+  const [sealPhase,       setSealPhase]       = useState<SealPhase>('idle');
+  const [showModal,       setShowModal]       = useState(false);
+  const [summaryDismissed, setSummaryDismissed] = useState(false);
 
   const titleRef    = useRef<HTMLInputElement>(null);
   const bodyEnabled = useRef(false);
@@ -190,6 +191,24 @@ export function ComposePage() {
             disabled={isSealing}
           />
         </div>
+
+        {/* ---- Coach summary (shown when coming from /coach) ---- */}
+        {coachState.intentSummary && !summaryDismissed && (
+          <div className="coach-kickstarter" role="note" aria-label="Your writing intention">
+            <div className="coach-kickstarter__label">Before you write</div>
+            <p className="coach-kickstarter__intent">{coachState.intentSummary}</p>
+            {coachState.structureSuggestion && (
+              <p className="coach-kickstarter__suggestion">{coachState.structureSuggestion}</p>
+            )}
+            <button
+              className="coach-kickstarter__dismiss"
+              onClick={() => setSummaryDismissed(true)}
+              aria-label="Dismiss writing intention"
+            >
+              dismiss
+            </button>
+          </div>
+        )}
 
         {/* ---- Paper (typewriter frame + paper sheet) ---- */}
         <div

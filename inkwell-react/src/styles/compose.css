@@ -45,6 +45,71 @@
   border-bottom-color: rgba(245, 230, 200, 0.32);
 }
 
+/* ---- Coach kickstarter panel ------------------------------------- */
+
+.coach-kickstarter {
+  position: relative;
+  width: var(--paper-width);
+  max-width: 100%;
+  border-left: 2px solid rgba(201, 151, 74, 0.35);
+  padding: 14px 20px 14px 18px;
+  background: rgba(201, 151, 74, 0.04);
+  animation: kickstarterFadeIn 500ms var(--ease-out) forwards;
+}
+
+@keyframes kickstarterFadeIn {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.coach-kickstarter__label {
+  font-family: var(--font-mechanical);
+  font-size: 10px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--ink-gold);
+  opacity: 0.7;
+  margin-bottom: 8px;
+}
+
+.coach-kickstarter__intent {
+  font-family: var(--font-body);
+  font-style: italic;
+  font-size: 14px;
+  line-height: 1.65;
+  color: rgba(245, 230, 200, 0.7);
+}
+
+.coach-kickstarter__suggestion {
+  font-family: var(--font-body);
+  font-size: 13px;
+  line-height: 1.6;
+  color: rgba(245, 230, 200, 0.45);
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(201, 151, 74, 0.12);
+}
+
+.coach-kickstarter__dismiss {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  font-family: var(--font-mechanical);
+  font-size: 10px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: rgba(245, 230, 200, 0.2);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 2px 4px;
+  transition: color var(--duration-fast) ease;
+}
+
+.coach-kickstarter__dismiss:hover {
+  color: rgba(245, 230, 200, 0.5);
+}
+
 /* ---- Paper + typewriter frame ------------------------------------ */
 
 /* Re-uses .typewriter-frame, .paper-guide, .pages-container, .page-sheet
