@@ -16,6 +16,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabaseClient';
+import { Nav } from '../components/layout/Nav';
 import '../styles/global.css';
 import '../styles/coach.css';
 
@@ -127,8 +128,9 @@ export function CoachPage() {
       .catch((err) => {
         console.error('[coach] error:', err);
         const msg = err?.message ?? String(err);
-        setApiError(`Coach unavailable (${msg}). You can still write — just skip.`);
+        setApiError(`Coach unavailable (${msg}). Heading to compose in a moment…`);
         setPhase('error');
+        setTimeout(() => navigate('/compose'), 2500);
       });
   // Only on mount
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -226,6 +228,7 @@ export function CoachPage() {
 
   return (
     <div className="coach-page desk-bg">
+      <Nav />
 
       {/* ---- Question flow ---- */}
       {phase !== 'summary' && (

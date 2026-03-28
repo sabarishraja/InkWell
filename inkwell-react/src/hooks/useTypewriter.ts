@@ -172,8 +172,8 @@ export function useTypewriter(config: TypewriterConfig): TypewriterController {
       triggerMarginDing();
     }
 
-    // ~1 char (≈12 px) from right → show "↵ return" warning
-    if (distFromRight <= 15 && distFromRight >= 0) {
+    // ~6 chars (≈72 px) from right → show "↵ return" warning
+    if (distFromRight <= 72 && distFromRight >= 0) {
       triggerBellWarn(cursorY);
     }
   }, [triggerMarginDing, triggerBellWarn]);
@@ -388,7 +388,8 @@ export function useTypewriter(config: TypewriterConfig): TypewriterController {
   }, [updateCursorPosition]);
 
   const getContent = useCallback((): string => {
-    return typingAreaRef.current?.innerHTML ?? '';
+    const html = typingAreaRef.current?.innerHTML ?? '';
+    return html.replace(/\u200B/g, '');
   }, []);
 
   const getCharCount = useCallback((): number => {

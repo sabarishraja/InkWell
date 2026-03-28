@@ -165,8 +165,8 @@ export function LetterViewPage() {
           <div
             className="letter-paper-body"
             /* Safe: body is HTML we wrote from our own contenteditable.
-               Only <br> tags and zero-width spaces are present. */
-            dangerouslySetInnerHTML={{ __html: letter.body }}
+               Strip any residual zero-width spaces before rendering. */
+            dangerouslySetInnerHTML={{ __html: letter.body.replace(/\u200B/g, '') }}
           />
         </div>
       </main>

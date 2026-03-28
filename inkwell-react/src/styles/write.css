@@ -293,6 +293,11 @@
   white-space: pre-wrap;
   word-break: break-word;
   overflow: hidden;
+  cursor: text;
+}
+
+/* Hide mouse cursor only while actively typing (custom cursor takes over) */
+.typing-area:focus {
   cursor: none;
 }
 

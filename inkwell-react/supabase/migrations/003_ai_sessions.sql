@@ -21,6 +21,11 @@ CREATE INDEX IF NOT EXISTS writing_sessions_user
 
 ALTER TABLE writing_sessions ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "sessions_select_own" ON writing_sessions;
+DROP POLICY IF EXISTS "sessions_insert_own" ON writing_sessions;
+DROP POLICY IF EXISTS "sessions_update_own" ON writing_sessions;
+DROP POLICY IF EXISTS "sessions_delete_own" ON writing_sessions;
+
 CREATE POLICY "sessions_select_own"
   ON writing_sessions FOR SELECT
   USING (auth.uid() = user_id);
@@ -53,6 +58,8 @@ CREATE INDEX IF NOT EXISTS nudge_usage_user_day
   ON nudge_usage (user_id, used_at);
 
 ALTER TABLE nudge_usage ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "nudge_usage_own" ON nudge_usage;
 
 -- Single policy covers all operations
 CREATE POLICY "nudge_usage_own"

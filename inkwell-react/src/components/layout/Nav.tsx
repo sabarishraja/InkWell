@@ -59,7 +59,7 @@ export function Nav() {
                 </NavLink>
               </li>
               <li>
-                <NavLink to="/compose" className={getLinkClass}>
+                <NavLink to="/coach" className={getLinkClass}>
                   Compose
                 </NavLink>
               </li>
