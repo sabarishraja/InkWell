@@ -702,21 +702,22 @@
 
 /* ---- Wax Seal (seal animation) ---------------------------- */
 .wax-seal {
+  /* Color tokens — overridden via inline style from ComposePage */
+  --wax-light:  #8B1A1A;
+  --wax-dark:   #4A0808;
+  --wax-ripple: rgba(139, 26, 26, 0.4);
+
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 72px;
-  height: 72px;
+  width: 100px;
+  height: 100px;
   border-radius: 50%;
-  background: radial-gradient(circle at 35% 35%, #8B1A1A, #4A0808);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 100, 100, 0.1);
+  background: radial-gradient(circle at 35% 35%, var(--wax-light), var(--wax-dark));
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 200, 150, 0.08);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: var(--font-display);
-  font-weight: 600;
-  font-size: 24px;
-  color: rgba(245, 200, 160, 0.5);
   transform: translate(-50%, -50%) scale(0.3);
   opacity: 0;
   pointer-events: none;
@@ -738,7 +739,7 @@
   position: absolute;
   inset: -8px;
   border-radius: 50%;
-  border: 1px solid rgba(139, 26, 26, 0.4);
+  border: 1px solid var(--wax-ripple);
   opacity: 0;
 }
 
@@ -749,6 +750,27 @@
 @keyframes sealRipple {
   0%   { transform: scale(1);   opacity: 0.8; }
   100% { transform: scale(1.5); opacity: 0; }
+}
+
+/* Seal design image (SVG rendered as engraved symbol on paper) */
+.wax-seal-img {
+  width: 80%;
+  height: 80%;
+  object-fit: contain;
+  filter: brightness(0) invert(1) opacity(0.5);
+  pointer-events: none;
+}
+
+/* Monogram text inside the seal */
+.wax-seal-monogram {
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 600;
+  color: rgba(245, 200, 160, 0.55);
+  letter-spacing: 1px;
+  line-height: 1;
+  pointer-events: none;
+  user-select: none;
 }
 
 /* Paper fold (applied to .page-sheet on seal) */
@@ -1024,4 +1046,177 @@
 .mute-toggle[aria-pressed="true"] {
   color: rgba(245, 230, 200, 0.25);
   border-color: rgba(201, 151, 74, 0.1);
+}
+
+/* ---- Seal Design Picker ----------------------------------- */
+.seal-picker-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  background: rgba(13, 11, 9, 0.88);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 200ms ease;
+}
+
+.seal-picker-overlay.picker--active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.seal-picker {
+  background: #12100D;
+  border: 1px solid rgba(201, 151, 74, 0.3);
+  border-radius: 6px;
+  padding: 32px 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-lg);
+  transform: translateY(12px);
+  transition: transform 200ms ease;
+}
+
+.seal-picker-overlay.picker--active .seal-picker {
+  transform: translateY(0);
+}
+
+.seal-picker__title {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 22px;
+  color: var(--ink-parchment);
+  letter-spacing: 0.5px;
+}
+
+/* Five circular wax seal preview buttons */
+.seal-picker__designs {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+}
+
+.seal-design-btn {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.6),
+              inset 0 1px 0 rgba(255, 200, 150, 0.08);
+  transition: transform var(--duration-fast) ease,
+              box-shadow var(--duration-fast) ease,
+              border-color var(--duration-fast) ease;
+  /* background set via inline style (wax gradient) */
+}
+
+.seal-design-btn:hover {
+  transform: scale(1.06);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.7),
+              inset 0 1px 0 rgba(255, 200, 150, 0.12);
+}
+
+.seal-design-btn.design--selected {
+  border-color: rgba(201, 151, 74, 0.8);
+  box-shadow: 0 0 0 3px rgba(201, 151, 74, 0.2),
+              0 4px 14px rgba(0, 0, 0, 0.6),
+              inset 0 1px 0 rgba(255, 200, 150, 0.08);
+}
+
+/* SVG design — fills the button so the seal reads clearly */
+.seal-design-img {
+  width: 95%;
+  height: 95%;
+  object-fit: contain;
+  filter: brightness(0) invert(1) opacity(0.55);
+  pointer-events: none;
+}
+
+/* Monogram text in the picker design button */
+.seal-monogram {
+  font-family: var(--font-display);
+  font-size: 24px;
+  font-weight: 600;
+  color: rgba(245, 200, 160, 0.6);
+  letter-spacing: 1px;
+  line-height: 1;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* Five small colored wax swatches */
+.seal-picker__colors {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.seal-color-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+  transition: transform var(--duration-fast) ease,
+              border-color var(--duration-fast) ease,
+              box-shadow var(--duration-fast) ease;
+  /* background set via inline style */
+}
+
+.seal-color-btn:hover {
+  transform: scale(1.15);
+}
+
+.seal-color-btn.color--selected {
+  border-color: rgba(201, 151, 74, 0.9);
+  box-shadow: 0 0 0 2px rgba(201, 151, 74, 0.25),
+              0 2px 8px rgba(0, 0, 0, 0.5);
+}
+
+.seal-picker__actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.btn-seal-confirm {
+  padding: 12px 40px;
+  border-radius: 4px;
+  border: 1px solid var(--ink-gold);
+  background: rgba(201, 151, 74, 0.15);
+  font-family: var(--font-mechanical);
+  font-size: 11px;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: var(--ink-gold);
+  cursor: pointer;
+  transition: background var(--duration-fast) ease;
+}
+
+.btn-seal-confirm:hover {
+  background: rgba(201, 151, 74, 0.28);
+}
+
+.btn-picker-cancel {
+  background: none;
+  border: none;
+  font-family: var(--font-ui);
+  font-size: 12px;
+  color: rgba(245, 230, 200, 0.25);
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  transition: color var(--duration-fast) ease;
+}
+
+.btn-picker-cancel:hover {
+  color: rgba(245, 230, 200, 0.5);
 }

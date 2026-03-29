@@ -3,28 +3,31 @@
  *
  * Seal flow:
  *   1. User fills title + body, clicks "Seal Letter".
- *   2. Wax seal drops and paper becomes read-only  ('drop' phase).
- *   3. Paper folds                                  ('fold' phase).
- *   4. SealModal slides in — user picks delivery time + recipient email.
- *   5a. User clicks "Seal & Send": letter saved to DB, edge function called
- *       for immediate delivery, paper flies away, redirect to dashboard.
- *   5b. User clicks "Wait, I need to edit": seal phases reset, paper unlocked.
+ *   2. SealPicker appears — user picks design + color ('picking' phase).
+ *   3. User confirms → paper becomes read-only, sound plays ('drop' phase).
+ *   4. Wax seal animates down with chosen design + color.
+ *   5. Paper folds ('fold' phase) and SealModal slides in.
+ *   6a. User clicks "Seal & Send": navigate to /reflection with all state.
+ *   6b. User clicks "Wait, I need to edit": reset to idle, paper unlocked.
+ *   Cancel in picker → reset to idle, no animation.
  */
 
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Nav }          from '../components/layout/Nav';
-import { TypingArea }   from '../components/write/TypingArea';
-import { MuteToggle }   from '../components/write/MuteToggle';
-import { SealModal }    from '../components/write/SealModal';
-import { useTypewriter } from '../hooks/useTypewriter';
-import { useAudio }     from '../hooks/useAudio';
-import { formatDate } from '../lib/utils';
-import type { DeliveryType } from '../types/letter';
+import { supabase }        from '../lib/supabaseClient';
+import { Nav }             from '../components/layout/Nav';
+import { TypingArea }      from '../components/write/TypingArea';
+import { MuteToggle }      from '../components/write/MuteToggle';
+import { SealModal }       from '../components/write/SealModal';
+import { SealPicker, getMonogram, waxGradient, WAX_COLORS } from '../components/write/SealPicker';
+import { useTypewriter }   from '../hooks/useTypewriter';
+import { useAudio }        from '../hooks/useAudio';
+import { formatDate }      from '../lib/utils';
+import type { DeliveryType, SealDesign, SealColor } from '../types/letter';
 import '../styles/write.css';
 import '../styles/compose.css';
 
-type SealPhase = 'idle' | 'drop' | 'fold' | 'fly';
+type SealPhase = 'idle' | 'picking' | 'drop' | 'fold' | 'fly';
 
 export function ComposePage() {
   const navigate = useNavigate();
@@ -33,18 +36,25 @@ export function ComposePage() {
 
   // Session state passed from CoachPage (undefined when coach was skipped)
   const coachState = (location.state ?? {}) as {
-    sessionId?:          string | null;
-    intentSummary?:      string | null;
+    sessionId?:           string | null;
+    intentSummary?:       string | null;
     structureSuggestion?: string | null;
   };
 
-  const [title,           setTitle]           = useState('');
-  const [charCount,       setCharCount]       = useState(0);
-  const [error,           setError]           = useState<string | null>(null);
-  const [loaded,          setLoaded]          = useState(false);
-  const [sealPhase,       setSealPhase]       = useState<SealPhase>('idle');
-  const [showModal,       setShowModal]       = useState(false);
+  const [title,            setTitle]            = useState('');
+  const [charCount,        setCharCount]        = useState(0);
+  const [error,            setError]            = useState<string | null>(null);
+  const [loaded,           setLoaded]           = useState(false);
+  const [sealPhase,        setSealPhase]        = useState<SealPhase>('idle');
+  const [showModal,        setShowModal]        = useState(false);
   const [summaryDismissed, setSummaryDismissed] = useState(false);
+
+  // Seal customisation — defaults match SealPicker defaults
+  const [sealDesign, setSealDesign] = useState<SealDesign>('heart');
+  const [sealColor,  setSealColor]  = useState<SealColor>('classic-red');
+
+  // Monogram derived from the authenticated user's display name
+  const [monogram, setMonogram] = useState('?');
 
   const titleRef    = useRef<HTMLInputElement>(null);
   const bodyEnabled = useRef(false);
@@ -63,6 +73,17 @@ export function ComposePage() {
   useEffect(() => {
     document.title = 'Compose — Inkwell';
     const t = setTimeout(() => setLoaded(true), 200);
+
+    // Fetch display name for monogram once on mount
+    supabase.auth.getUser().then(({ data }) => {
+      const name =
+        data.user?.user_metadata?.full_name ??
+        data.user?.user_metadata?.name ??
+        data.user?.email ??
+        null;
+      setMonogram(getMonogram(name));
+    });
+
     return () => {
       clearTimeout(t);
       sealTimers.current.forEach(clearTimeout);
@@ -83,7 +104,37 @@ export function ComposePage() {
     }
   };
 
-  // Begin seal animation — drops wax seal and folds paper, then shows modal
+  // Step 1: user clicks "Seal Letter" — show the picker
+  const handleSealClick = () => {
+    const trimmedTitle = title.trim();
+    if (!trimmedTitle) {
+      titleRef.current?.focus();
+      setError('Please add a title before sealing.');
+      return;
+    }
+    if (tw.getCharCount() === 0) {
+      enableBody();
+      setError('Write something before sealing.');
+      return;
+    }
+    setError(null);
+    setSealPhase('picking');
+  };
+
+  // Picker cancelled — return to idle
+  const handlePickerCancel = useCallback(() => {
+    setSealPhase('idle');
+  }, []);
+
+  // Picker confirmed — store choices and start the animation
+  const handlePickerConfirm = useCallback((design: SealDesign, color: SealColor) => {
+    setSealDesign(design);
+    setSealColor(color);
+    beginSealAnimation();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Step 2: drop seal, fold paper, show delivery modal
   const beginSealAnimation = useCallback(() => {
     tw.setReadOnly(true);
     setSealPhase('drop');
@@ -123,38 +174,29 @@ export function ComposePage() {
       navigate('/reflection', {
         replace: true,
         state: {
-          title:          title.trim(),
-          body:           tw.getContent(),
+          title:         title.trim(),
+          body:          tw.getContent(),
           deliveryType,
           specificDate,
           email,
-          sessionId:      coachState.sessionId     ?? null,
-          intentSummary:  coachState.intentSummary ?? null,
+          sealDesign,
+          sealColor,
+          sessionId:     coachState.sessionId     ?? null,
+          intentSummary: coachState.intentSummary ?? null,
         },
       });
     }, 900);
 
     sealTimers.current.push(t2);
-  }, [title, tw, navigate, coachState]);
+  }, [title, tw, navigate, coachState, sealDesign, sealColor]);
 
-  const handleSealClick = () => {
-    const trimmedTitle = title.trim();
-    if (!trimmedTitle) {
-      titleRef.current?.focus();
-      setError('Please add a title before sealing.');
-      return;
-    }
-    if (tw.getCharCount() === 0) {
-      enableBody();
-      setError('Write something before sealing.');
-      return;
-    }
-    setError(null);
-    beginSealAnimation();
-  };
+  // ---- Derived state ----
 
-  const isReady   = title.trim().length > 0 && charCount > 0;
-  const isSealing = sealPhase !== 'idle';
+  const isReady      = title.trim().length > 0 && charCount > 0;
+  // Hides the Seal button and locks inputs during any non-idle phase
+  const isSealing    = sealPhase !== 'idle';
+  // Only animate the wax seal element during drop/fold/fly
+  const sealAnimating = sealPhase === 'drop' || sealPhase === 'fold' || sealPhase === 'fly';
 
   const sheetClass = [
     'page-sheet',
@@ -165,9 +207,26 @@ export function ComposePage() {
 
   const sealClass = [
     'wax-seal',
-    isSealing ? 'seal--drop'   : '',
-    isSealing ? 'seal--ripple' : '',
+    sealAnimating ? 'seal--drop'   : '',
+    sealAnimating ? 'seal--ripple' : '',
   ].filter(Boolean).join(' ');
+
+  // Inline style overrides the default red with the chosen wax color
+  const waxSealStyle = sealAnimating ? {
+    background: waxGradient(sealColor),
+    '--wax-ripple': (() => {
+      const c = WAX_COLORS.find(x => x.id === sealColor);
+      return c ? `${c.light}66` : 'rgba(139,26,26,0.4)';
+    })(),
+  } as React.CSSProperties : undefined;
+
+  // SVG path for the chosen design (undefined = monogram)
+  const sealSrc =
+    sealDesign === 'flower'           ? '/assets/seals/flower.svg'
+    : sealDesign === 'infinity-heart' ? '/assets/seals/infinity_heart.svg'
+    : sealDesign === 'floral'         ? '/assets/seals/floral.svg'
+    : sealDesign === 'heart'          ? '/assets/seals/heart.svg'
+    : undefined;
 
   return (
     <div className="compose-page desk-bg">
@@ -241,7 +300,14 @@ export function ComposePage() {
                   />
                 </div>
 
-                <div className={sealClass} aria-hidden="true">✦</div>
+                {/* Wax seal — shows chosen design + color once animation starts */}
+                <div className={sealClass} style={waxSealStyle} aria-hidden="true">
+                  {sealSrc ? (
+                    <img src={sealSrc} alt="" className="wax-seal-img" />
+                  ) : (
+                    <span className="wax-seal-monogram">{monogram}</span>
+                  )}
+                </div>
               </div>
             </div>
           </div>
@@ -272,7 +338,15 @@ export function ComposePage() {
 
       </main>
 
-      {/* ---- Seal Modal (shown at fold phase) ---- */}
+      {/* ---- Seal Picker (shown before animation, lets user choose design + color) ---- */}
+      <SealPicker
+        visible={sealPhase === 'picking'}
+        monogram={monogram}
+        onConfirm={handlePickerConfirm}
+        onCancel={handlePickerCancel}
+      />
+
+      {/* ---- Seal Modal (shown at fold phase — delivery timing + email) ---- */}
       <SealModal
         visible={showModal}
         sending={false}

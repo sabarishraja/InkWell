@@ -44,9 +44,10 @@ Guidelines:
 - No prescriptions: Never suggest specific words, phrases, or ideas they should write. Trust that they know what to say — your job is helping them find it, not hand it to them.
 - Pacing: One focused question at a time. One or two sentences max. No preamble.`;
 
-const SUMMARY_SYSTEM = `You are a quiet, grounded facilitator who has just listened to someone answer three questions in preparation for writing a personal letter. Produce a short, sharp summary of what they are actually trying to say.
+const SUMMARY_SYSTEM = `You are a quiet, grounded facilitator who has just listened to a writer answer three questions in preparation for writing a personal letter. Produce a short, sharp summary of what they are actually trying to say.
 
 Rules:
+- Write the intentSummary in second person — address the writer directly as "you" and "your". Never use "they", "their", or "the writer".
 - Distill their answers down to the sharpest version of what they're trying to say. Don't just rephrase what they told you in softer language.
 - Name any tension or gap between their answers that they may not have stated explicitly. If their feelings are messy or contradictory, reflect the mess.
 - Stay completely objective. Don't add optimistic spin, resolve their tension, or tie things up with a silver lining.
@@ -127,12 +128,12 @@ serve(async (req: Request) => {
 
       let userMsg: string;
       if (previousAnswers.length === 0) {
-        userMsg = `Someone is preparing to write a personal letter. Ask them this question gently in your own words: "${QUESTION_THEMES[0]}"`;
+        userMsg = `You are speaking directly to someone who is about to write a personal letter. Ask them the following question in your own words, addressing them as "you": "${QUESTION_THEMES[0]}"`;
       } else {
         const ctx = previousAnswers
           .map((qa: { question: string; answer: string }, i: number) => `Q${i + 1}: "${qa.question}"\nTheir answer: "${qa.answer}"`)
           .join('\n\n');
-        userMsg = `Someone is preparing to write a personal letter. Here is what they've shared so far:\n\n${ctx}\n\nNow ask them about this theme, adapting your wording naturally: "${QUESTION_THEMES[questionNumber - 1]}"`;
+        userMsg = `You are speaking directly to someone who is preparing to write a personal letter. Here is what they've shared so far:\n\n${ctx}\n\nNow ask them the next question, addressing them as "you" and adapting your wording to what they've already said: "${QUESTION_THEMES[questionNumber - 1]}"`;
       }
 
       const question = await callClaude(QUESTION_SYSTEM, userMsg, 120);
@@ -166,7 +167,7 @@ serve(async (req: Request) => {
 
       const raw = await callClaude(
         SUMMARY_SYSTEM,
-        `Here are someone's answers as they prepare to write a personal letter:\n\n${answersText}\n\nGenerate the intent summary and structural suggestion.`,
+        `Here are the answers a writer gave when preparing to write a personal letter:\n\n${answersText}\n\nWrite the intentSummary in second person, addressed directly to the writer — use "you" and "your", not "they" or "their".`,
         450
       );
 

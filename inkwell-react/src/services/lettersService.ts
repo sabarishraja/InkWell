@@ -28,8 +28,10 @@ export async function saveLetter(letter: NewLetter): Promise<Letter> {
       recipient_email: letter.recipient_email,
       deliver_at:      letter.deliver_at,
       status:          'pending',
-      font:            letter.font  ?? 'typewriter',
-      paper:           letter.paper ?? 'parchment',
+      font:            letter.font         ?? 'typewriter',
+      paper:           letter.paper        ?? 'parchment',
+      seal_design:     letter.seal_design  ?? 'heart',
+      seal_color:      letter.seal_color   ?? 'classic-red',
     })
     .select()
     .single();

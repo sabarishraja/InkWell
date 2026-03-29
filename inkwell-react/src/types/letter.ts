@@ -15,6 +15,8 @@ export interface Letter {
   sealed_at:       string;       // ISO timestamptz — when sealed
   font:            string;       // FontChoice — stored as text in DB
   paper:           string;       // PaperStyle — stored as text in DB
+  seal_design:     string;       // SealDesign — stored as text in DB
+  seal_color:      string;       // SealColor  — stored as text in DB
 }
 
 /** Shape required to create a new (sealed) letter. */
@@ -24,8 +26,10 @@ export type NewLetter = Pick<Letter,
   | 'recipient_email'
   | 'deliver_at'
 > & {
-  font?:  FontChoice;
-  paper?: PaperStyle;
+  font?:         FontChoice;
+  paper?:        PaperStyle;
+  seal_design?:  SealDesign;
+  seal_color?:   SealColor;
 };
 
 // ---------------------------------------------------------------------------
@@ -36,3 +40,5 @@ export type PaperStyle   = 'parchment' | 'linen' | 'aged';
 export type InkColor     = 'sepia' | 'navy' | 'midnight';
 export type DeliveryType = 'now' | 'scheduled' | 'surprise';
 export type LetterStatus = 'pending' | 'delivered';
+export type SealDesign   = 'flower' | 'infinity-heart' | 'floral' | 'heart' | 'monogram';
+export type SealColor    = 'classic-red' | 'burgundy' | 'gold' | 'forest-green' | 'navy';

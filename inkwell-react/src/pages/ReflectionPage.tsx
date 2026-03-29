@@ -31,7 +31,7 @@ import { useNavigate, useLocation }         from 'react-router-dom';
 import { supabase }                         from '../lib/supabaseClient';
 import { useLetters }                       from '../hooks/useLetters';
 import { generateDeliveryDate, formatDate } from '../lib/utils';
-import type { DeliveryType, FontChoice, PaperStyle } from '../types/letter';
+import type { DeliveryType, FontChoice, PaperStyle, SealDesign, SealColor } from '../types/letter';
 import '../styles/global.css';
 import '../styles/reflection.css';
 
@@ -47,6 +47,8 @@ interface LocationState {
   intentSummary?: string | null;
   font?:          FontChoice;
   paper?:         PaperStyle;
+  sealDesign?:    SealDesign;
+  sealColor?:     SealColor;
 }
 
 type Phase  = 'intent' | 'closing' | 'simple';
@@ -116,6 +118,8 @@ export function ReflectionPage() {
         deliver_at:      deliverAt,
         font:            state.font,
         paper:           state.paper,
+        seal_design:     state.sealDesign,
+        seal_color:      state.sealColor,
       });
 
       if (!saved) {
@@ -153,6 +157,8 @@ export function ReflectionPage() {
         intentSummary: state.intentSummary,
         returnFont:    state.font,
         returnPaper:   state.paper,
+        sealDesign:    state.sealDesign,
+        sealColor:     state.sealColor,
       },
     });
   };
